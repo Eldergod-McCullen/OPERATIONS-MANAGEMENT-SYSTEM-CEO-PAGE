@@ -1,0 +1,1114 @@
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtCore import Qt
+import math
+
+# ── Shared palette ────────────────────────────────────────────────────────────
+_NAVY      = "#0d1b3e"
+_ACCENT    = "#5870ff"
+_BG        = "#f0f2f5"
+_WHITE     = "#ffffff"
+_BORDER    = "#e5e7eb"
+_TEXT_DARK = "#1a1a2e"
+_TEXT_GREY = "#6b7280"
+_TEXT_MID  = "#374151"
+
+# ── Priority colours ──────────────────────────────────────────────────────────
+PRIORITY_COLOURS = {
+    "High":   ("#b91c1c", "#fee2e2"),
+    "Medium": ("#d97706", "#fef3c7"),
+    "Low":    ("#15803d", "#dcfce7"),
+}
+
+# ── Status colours ────────────────────────────────────────────────────────────
+STATUS_COLOURS = {
+    "In Progress": ("#1d4ed8", "#dbeafe"),
+    "Pending":     ("#d97706", "#fef3c7"),
+    "Completed":   ("#15803d", "#dcfce7"),
+    "Overdue":     ("#b91c1c", "#fee2e2"),
+}
+
+# ── Sample data ───────────────────────────────────────────────────────────────
+# (req_id, title, category, requested_by, location, priority, status, requested_on)
+SAMPLE_REQUESTS = [
+    ("MNT-2025-0086","AC Not Cooling",         "Electrical",  "Mary Wanjiku",   "Conference Room 1","High",  "In Progress","22 Jun 2025 09:15 AM"),
+    ("MNT-2025-0085","Printer Not Working",    "Equipment",   "David Mwangi",   "Admin Office",     "Medium","Pending",    "22 Jun 2025 08:45 AM"),
+    ("MNT-2025-0084","Leak in Water Tap",      "Plumbing",    "Grace Njeri",    "Kitchen",          "Low",   "Completed",  "21 Jun 2025 05:30 PM"),
+    ("MNT-2025-0083","Projector Display Issue","Equipment",   "Joseph Kiprono", "Meeting Room 2",   "Medium","In Progress","21 Jun 2025 03:20 PM"),
+    ("MNT-2025-0082","Light Flickering",       "Electrical",  "Susan Akinyi",   "Open Office Area", "High",  "Overdue",    "20 Jun 2025 11:10 AM"),
+    ("MNT-2025-0081","Door Lock Broken",       "Carpentry",   "Peter Ochieng",  "Store Room",       "Low",   "Pending",    "20 Jun 2025 10:00 AM"),
+    ("MNT-2025-0080","Network Cable Issue",    "IT & Network","Brian Otieno",   "IT Department",    "Medium","In Progress","19 Jun 2025 04:25 PM"),
+    ("MNT-2025-0079","Generator Service",      "Mechanical",  "Lilian Moraa",   "Generator Room",   "High",  "Completed",  "19 Jun 2025 09:30 AM"),
+    ("MNT-2025-0078","Wall Paint Touch-up",    "Civil",       "Kevin Odhiambo", "CEO Office",       "Low",   "Completed",  "18 Jun 2025 02:15 PM"),
+    ("MNT-2025-0077","Chair Wheels Broken",    "Furniture",   "Aisha Hassan",   "Workstation 12",   "Low",   "Pending",    "18 Jun 2025 11:40 AM"),
+]
+
+CATEGORIES = ["All Categories","Electrical","Equipment","Plumbing","Mechanical",
+               "Carpentry","Civil","IT & Network","Furniture"]
+
+# Category bar chart data: (label, count, colour)
+CATEGORY_BARS = [
+    ("Electrical",  28, "#3b82f6"),
+    ("Equipment",   22, "#10b981"),
+    ("Plumbing",    10, "#f59e0b"),
+    ("Mechanical",   9, "#8b5cf6"),
+    ("Civil",        8, "#ec4899"),
+    ("IT & Network", 6, "#06b6d4"),
+    ("Carpentry",    3, "#ef4444"),
+]
+
+# Top departments: (icon, name, count)
+TOP_DEPARTMENTS = [
+    ("🏢","Operations Department", 24),
+    ("💻","IT Department",         18),
+    ("🗂","Administration",        14),
+    ("💰","Finance Department",    10),
+    ("👥","Human Resources",        8),
+    ("📣","Marketing Department",   6),
+    ("📦","Other Departments",      6),
+]
+
+# Selected request details (right panel)
+SELECTED_REQUEST = {
+    "title":       "AC Not Cooling",
+    "status":      "In Progress",
+    "req_id":      "MNT-2025-0086",
+    "category":    "Electrical",
+    "requested_by":"Mary Wanjiku",
+    "location":    "Conference Room 1",
+    "priority":    "High",
+    "requested_on":"22 Jun 2025 09:15 AM",
+    "description": "The AC in the conference room is not cooling properly and the temperature is too high.",
+    "assigned_to": "Maintenance Team A",
+    "last_updated":"22 Jun 2025 10:30 AM",
+}
+
+
+# ==============================================================================
+# BADGE helper
+# ==============================================================================
+class _Badge(QtWidgets.QLabel):
+    def __init__(self, text: str, fg: str, bg: str, parent=None):
+        super().__init__(text, parent)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setFixedHeight(20)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed,
+                           QtWidgets.QSizePolicy.Policy.Fixed)
+        self.setStyleSheet(f"""
+            QLabel {{
+                color: {fg};
+                background-color: {bg};
+                border-radius: 9px;
+                padding: 0px 8px;
+                font-size: 10px;
+                font-weight: 700;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }}
+        """)
+
+
+# ==============================================================================
+# DONUT CHART  (Requests by Status)
+# ==============================================================================
+class _DonutChart(QtWidgets.QWidget):
+    """Simple QPainter donut chart for Requests by Status."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setMinimumSize(180, 180)
+        # (label, value, colour)
+        self._slices = [
+            ("Completed",  42, "#10b981"),
+            ("In Progress",28, "#3b82f6"),
+            ("Pending",    12, "#f59e0b"),
+            ("Overdue",     4, "#ef4444"),
+        ]
+        self._total = sum(s[1] for s in self._slices)
+
+    def paintEvent(self, event):
+        p = QtGui.QPainter(self)
+        p.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
+
+        w, h = self.width(), self.height()
+        size  = min(w, h) - 20
+        x     = (w - size) // 2
+        y     = (h - size) // 2
+        rect  = QtCore.QRectF(x, y, size, size)
+
+        start_angle = 90 * 16   # QPainter uses 1/16th degrees; start at top
+        for label, value, colour in self._slices:
+            span = int(round(value / self._total * 360 * 16))
+            p.setBrush(QtGui.QColor(colour))
+            p.setPen(Qt.PenStyle.NoPen)
+            p.drawPie(rect, start_angle, -span)
+            start_angle -= span
+
+        # Hollow centre
+        hole = size * 0.55
+        hx   = (w - hole) / 2
+        hy   = (h - hole) / 2
+        p.setBrush(QtGui.QColor(_WHITE))
+        p.drawEllipse(QtCore.QRectF(hx, hy, hole, hole))
+
+        # Centre text
+        p.setPen(QtGui.QColor(_TEXT_DARK))
+        f_big = QtGui.QFont("Segoe UI", 18, QtGui.QFont.Weight.Bold)
+        p.setFont(f_big)
+        p.drawText(QtCore.QRectF(hx, hy - 10, hole, hole / 2 + 10),
+                   Qt.AlignmentFlag.AlignCenter, str(self._total))
+        f_sm = QtGui.QFont("Segoe UI", 9)
+        p.setFont(f_sm)
+        p.setPen(QtGui.QColor(_TEXT_GREY))
+        p.drawText(QtCore.QRectF(hx, hy + hole / 2 - 14, hole, 20),
+                   Qt.AlignmentFlag.AlignCenter, "Total")
+        p.end()
+
+
+# ==============================================================================
+# STAT CARD (top row)
+# ==============================================================================
+class _StatCard(QtWidgets.QFrame):
+    def __init__(self, icon: str, icon_bg: str, icon_fg: str,
+                 label: str, value: str, sublabel: str, parent=None):
+        super().__init__(parent)
+        self.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self.setStyleSheet(f"""
+            QFrame {{
+                background-color: {_WHITE};
+                border: 1px solid {_BORDER};
+                border-radius: 10px;
+            }}
+        """)
+
+        hl = QtWidgets.QHBoxLayout(self)
+        hl.setContentsMargins(14, 12, 14, 12)
+        hl.setSpacing(12)
+
+        icon_lbl = QtWidgets.QLabel(icon)
+        icon_lbl.setFixedSize(40, 40)
+        icon_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon_lbl.setStyleSheet(f"""
+            QLabel {{
+                background-color: {icon_bg};
+                border-radius: 20px;
+                font-size: 18px;
+            }}
+        """)
+
+        vl = QtWidgets.QVBoxLayout()
+        vl.setSpacing(2)
+
+        lbl_top = QtWidgets.QLabel(label)
+        lbl_top.setStyleSheet(f"color: {_TEXT_GREY}; font-size: 11px;")
+
+        lbl_val = QtWidgets.QLabel(value)
+        lbl_val.setStyleSheet(f"""
+            color: {_TEXT_DARK};
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        """)
+
+        lbl_sub = QtWidgets.QLabel(sublabel)
+        lbl_sub.setStyleSheet(f"color: {_TEXT_GREY}; font-size: 10px;")
+
+        vl.addWidget(lbl_top)
+        vl.addWidget(lbl_val)
+        vl.addWidget(lbl_sub)
+
+        hl.addWidget(icon_lbl)
+        hl.addLayout(vl)
+        hl.addStretch()
+
+
+# ==============================================================================
+# NEW REQUEST DIALOG
+# ==============================================================================
+class NewRequestDialog(QtWidgets.QDialog):
+    """Modal dialog to submit a new maintenance request."""
+
+    request_saved = QtCore.pyqtSignal(dict)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("New Maintenance Request")
+        self.setModal(True)
+        self.setFixedSize(500, 560)
+        self.setStyleSheet(f"""
+            QDialog {{ background-color: {_WHITE}; font-family: 'Segoe UI', Arial; }}
+            QLabel#hdrTitle {{ color:{_TEXT_DARK}; font-size:15px; font-weight:bold; }}
+            QLabel#hdrSub   {{ color:{_TEXT_GREY}; font-size:12px; }}
+            QLabel#fldLbl   {{ color:{_TEXT_MID};  font-size:12px; font-weight:600; }}
+            QLineEdit, QComboBox, QTextEdit {{
+                border: 1px solid {_BORDER};
+                border-radius: 6px;
+                padding: 7px 10px;
+                font-size: 12px;
+                color: {_TEXT_DARK};
+                background-color: #f9fafb;
+            }}
+            QLineEdit:focus, QComboBox:focus, QTextEdit:focus {{
+                border: 1.5px solid {_ACCENT};
+                background-color: {_WHITE};
+            }}
+            QPushButton#cancelBtn {{
+                background:{_WHITE}; border:1px solid {_BORDER};
+                border-radius:6px; padding:8px 22px;
+                font-size:12px; color:{_TEXT_MID};
+            }}
+            QPushButton#cancelBtn:hover {{ background:#f9fafb; }}
+            QPushButton#saveBtn {{
+                background:{_ACCENT}; border:none;
+                border-radius:6px; padding:8px 26px;
+                font-size:12px; font-weight:bold; color:{_WHITE};
+            }}
+            QPushButton#saveBtn:hover {{ background:#4a60ee; }}
+            QFrame#div {{ border:none; border-top:1px solid {_BORDER}; }}
+        """)
+
+        root = QtWidgets.QVBoxLayout(self)
+        root.setContentsMargins(26, 22, 26, 18)
+        root.setSpacing(0)
+
+        # Header
+        hdr_hl = QtWidgets.QHBoxLayout()
+        ico = QtWidgets.QLabel("🔧")
+        ico.setFixedSize(40, 40)
+        ico.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        ico.setStyleSheet("background:#fff0e0;border-radius:20px;font-size:18px;")
+
+        hdr_vl = QtWidgets.QVBoxLayout()
+        hdr_vl.setSpacing(2)
+        t = QtWidgets.QLabel("New Maintenance Request")
+        t.setObjectName("hdrTitle")
+        s = QtWidgets.QLabel("Fill in the details to submit a new request.")
+        s.setObjectName("hdrSub")
+        hdr_vl.addWidget(t)
+        hdr_vl.addWidget(s)
+
+        hdr_hl.addWidget(ico)
+        hdr_hl.addSpacing(10)
+        hdr_hl.addLayout(hdr_vl)
+        hdr_hl.addStretch()
+        root.addLayout(hdr_hl)
+        root.addSpacing(14)
+
+        div0 = QtWidgets.QFrame(); div0.setObjectName("div"); div0.setFixedHeight(1)
+        root.addWidget(div0)
+        root.addSpacing(14)
+
+        def lbl(txt):
+            l = QtWidgets.QLabel(txt); l.setObjectName("fldLbl"); return l
+
+        form = QtWidgets.QFormLayout()
+        form.setVerticalSpacing(12)
+        form.setHorizontalSpacing(14)
+        form.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+
+        self.title_edit = QtWidgets.QLineEdit()
+        self.title_edit.setPlaceholderText("e.g. AC Not Cooling")
+        form.addRow(lbl("Request Title *"), self.title_edit)
+
+        self.cat_combo = QtWidgets.QComboBox()
+        self.cat_combo.addItems(CATEGORIES[1:])
+        form.addRow(lbl("Category *"), self.cat_combo)
+
+        self.loc_edit = QtWidgets.QLineEdit()
+        self.loc_edit.setPlaceholderText("e.g. Conference Room 1")
+        form.addRow(lbl("Location *"), self.loc_edit)
+
+        self.priority_combo = QtWidgets.QComboBox()
+        self.priority_combo.addItems(["High", "Medium", "Low"])
+        form.addRow(lbl("Priority *"), self.priority_combo)
+
+        self.req_by_edit = QtWidgets.QLineEdit()
+        self.req_by_edit.setPlaceholderText("e.g. Mary Wanjiku")
+        form.addRow(lbl("Requested By *"), self.req_by_edit)
+
+        self.desc_edit = QtWidgets.QTextEdit()
+        self.desc_edit.setPlaceholderText("Describe the issue in detail...")
+        self.desc_edit.setFixedHeight(70)
+        form.addRow(lbl("Description"), self.desc_edit)
+
+        root.addLayout(form)
+        root.addStretch()
+
+        self.err_lbl = QtWidgets.QLabel("")
+        self.err_lbl.setStyleSheet("color:#b91c1c; font-size:11px;")
+        self.err_lbl.setVisible(False)
+        root.addWidget(self.err_lbl)
+        root.addSpacing(8)
+
+        div1 = QtWidgets.QFrame(); div1.setObjectName("div"); div1.setFixedHeight(1)
+        root.addWidget(div1)
+        root.addSpacing(12)
+
+        btn_hl = QtWidgets.QHBoxLayout()
+        btn_hl.addStretch()
+        self.cancel_btn = QtWidgets.QPushButton("Cancel")
+        self.cancel_btn.setObjectName("cancelBtn")
+        self.cancel_btn.setFixedHeight(36)
+        self.cancel_btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        self.cancel_btn.clicked.connect(self.reject)
+
+        self.save_btn = QtWidgets.QPushButton("✚  Submit Request")
+        self.save_btn.setObjectName("saveBtn")
+        self.save_btn.setFixedHeight(36)
+        self.save_btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        self.save_btn.clicked.connect(self._on_save)
+
+        btn_hl.addWidget(self.cancel_btn)
+        btn_hl.addSpacing(8)
+        btn_hl.addWidget(self.save_btn)
+        root.addLayout(btn_hl)
+
+    def _on_save(self):
+        title  = self.title_edit.text().strip()
+        loc    = self.loc_edit.text().strip()
+        req_by = self.req_by_edit.text().strip()
+        errs   = []
+        if not title:  errs.append("Title is required.")
+        if not loc:    errs.append("Location is required.")
+        if not req_by: errs.append("Requested By is required.")
+        if errs:
+            self.err_lbl.setText("⚠  " + "  •  ".join(errs))
+            self.err_lbl.setVisible(True)
+            return
+        self.err_lbl.setVisible(False)
+        self.request_saved.emit({
+            "title":        title,
+            "category":     self.cat_combo.currentText(),
+            "location":     loc,
+            "priority":     self.priority_combo.currentText(),
+            "requested_by": req_by,
+            "description":  self.desc_edit.toPlainText().strip(),
+        })
+        self.accept()
+
+
+# =================================================================================
+# MAINTENANCE PAGE
+# ==============================================================================
+class MaintenancePage(QtWidgets.QWidget):
+    """
+    Full Maintenance page — slots into stackedWidget index 7.
+
+    Layout
+    ──────
+    Left scroll area
+      • Page header + action buttons
+      • 5 stat cards
+      • Tab bar (All / In Progress / Pending / Completed / Overdue)
+      • Request table + pagination
+      • Bottom row: donut chart | bar chart | top departments
+    Right panel (fixed 270px)
+      • Request Details card
+      • Maintenance Overview card
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("Maintenance_Page")
+        self.setStyleSheet(f"background-color: {_BG};")
+        self._requests = list(SAMPLE_REQUESTS)
+        self._active_tab = "All Requests"
+        self._build_ui()
+        self._populate_table()
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # BUILD UI
+    # ──────────────────────────────────────────────────────────────────────────
+    def _build_ui(self):
+        outer = QtWidgets.QHBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+
+        # ════════════════════════════════════════════════════════════════
+        # LEFT SCROLL AREA
+        # ════════════════════════════════════════════════════════════════
+        scroll = QtWidgets.QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setStyleSheet("background:transparent; border:none;")
+
+        lc = QtWidgets.QWidget()
+        lc.setStyleSheet(f"background-color:{_BG};")
+        lv = QtWidgets.QVBoxLayout(lc)
+        lv.setContentsMargins(22, 18, 14, 18)
+        lv.setSpacing(14)
+
+        # ── Page header ───────────────────────────────────────────────
+        hdr = QtWidgets.QHBoxLayout()
+        hdr.setSpacing(12)
+
+        ico = QtWidgets.QLabel("🔧")
+        ico.setFixedSize(44, 44)
+        ico.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        ico.setStyleSheet("background:#fff0e0;border-radius:22px;font-size:20px;")
+
+        tvl = QtWidgets.QVBoxLayout(); tvl.setSpacing(2)
+        pg_t = QtWidgets.QLabel("Maintenance")
+        pg_t.setStyleSheet(f"color:{_TEXT_DARK};font-size:20px;font-weight:bold;"
+                           f"font-family:'Segoe UI',Arial;")
+        pg_s = QtWidgets.QLabel("Manage maintenance requests, equipment, and track maintenance activities.")
+        pg_s.setStyleSheet(f"color:{_TEXT_GREY};font-size:11px;")
+        tvl.addWidget(pg_t); tvl.addWidget(pg_s)
+
+        hdr.addWidget(ico); hdr.addLayout(tvl); hdr.addStretch()
+
+        self.filter_btn  = self._outline_btn("▼  Filter")
+        self.export_btn  = self._outline_btn("↑  Export")
+        self.new_req_btn = self._primary_btn("＋  New Request")
+        self.new_req_btn.clicked.connect(self._on_new_request)
+        self.filter_btn.clicked.connect(self._on_filter_menu)
+        self.export_btn.clicked.connect(self._on_export)
+
+        self.search_edit = QtWidgets.QLineEdit()
+        self.search_edit.setPlaceholderText("🔍  Search requests...")
+        self.search_edit.setFixedHeight(34)
+        self.search_edit.setMinimumWidth(200)
+        self.search_edit.setStyleSheet(f"""
+            QLineEdit {{
+                border:1px solid {_BORDER}; border-radius:6px;
+                padding:0 12px; font-size:12px;
+                color:{_TEXT_MID}; background:{_WHITE};
+            }}
+            QLineEdit:focus {{ border:1.5px solid {_ACCENT}; }}
+        """)
+        self.search_edit.textChanged.connect(self._apply_filters)
+
+        hdr.addWidget(self.search_edit)
+        hdr.addWidget(self.filter_btn)
+        hdr.addWidget(self.export_btn)
+        hdr.addWidget(self.new_req_btn)
+        lv.addLayout(hdr)
+
+        # ── Stat cards ────────────────────────────────────────────────
+        cards_hl = QtWidgets.QHBoxLayout(); cards_hl.setSpacing(10)
+        cards_data = [
+            ("📋","#eff0ff","#5870ff","Total Requests",  "86","All maintenance requests"),
+            ("✅","#dcfce7","#10b981","Completed",        "42","48.84% of total"),
+            ("⏳","#fff7e0","#f59e0b","In Progress",      "28","32.56% of total"),
+            ("⌛","#f3e8ff","#8b5cf6","Pending",          "12","13.95% of total"),
+            ("⚠️","#fee2e2","#ef4444","Overdue",          "4", "4.65% of total"),
+        ]
+        for icon, ibg, ifg, label, val, sub in cards_data:
+            cards_hl.addWidget(_StatCard(icon, ibg, ifg, label, val, sub))
+        lv.addLayout(cards_hl)
+
+        # ── Table section header ──────────────────────────────────────
+        tbl_hdr = QtWidgets.QVBoxLayout(); tbl_hdr.setSpacing(2)
+        th_t = QtWidgets.QLabel("Maintenance Requests")
+        th_t.setStyleSheet(f"color:{_TEXT_DARK};font-size:14px;font-weight:bold;"
+                           f"font-family:'Segoe UI',Arial;")
+        th_s = QtWidgets.QLabel("View, search and manage maintenance requests.")
+        th_s.setStyleSheet(f"color:{_TEXT_GREY};font-size:11px;")
+        tbl_hdr.addWidget(th_t); tbl_hdr.addWidget(th_s)
+        lv.addLayout(tbl_hdr)
+
+        # ── Tab bar ───────────────────────────────────────────────────
+        tabs_hl = QtWidgets.QHBoxLayout(); tabs_hl.setSpacing(0)
+        self._tab_btns: dict[str, QtWidgets.QPushButton] = {}
+        for tab in ["All Requests","In Progress","Pending","Completed","Overdue"]:
+            btn = QtWidgets.QPushButton(tab)
+            btn.setCheckable(True)
+            btn.setAutoExclusive(True)
+            btn.setFixedHeight(34)
+            btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+            btn.setStyleSheet(self._tab_style(False))
+            btn.clicked.connect(lambda _, t=tab, b=btn: self._on_tab(t))
+            self._tab_btns[tab] = btn
+            tabs_hl.addWidget(btn)
+        tabs_hl.addStretch()
+        self._tab_btns["All Requests"].setChecked(True)
+        self._tab_btns["All Requests"].setStyleSheet(self._tab_style(True))
+        lv.addLayout(tabs_hl)
+
+        # ── Table card ────────────────────────────────────────────────
+        tcard = self._card()
+        tvl2  = QtWidgets.QVBoxLayout(tcard)
+        tvl2.setContentsMargins(0, 0, 0, 0)
+        tvl2.setSpacing(0)
+
+        self.table = QtWidgets.QTableWidget()
+        self.table.setColumnCount(9)
+        self.table.setHorizontalHeaderLabels([
+            "#","Request ID","Title","Category",
+            "Requested By","Location","Priority","Status","Actions"
+        ])
+        self.table.setShowGrid(False)
+        self.table.setAlternatingRowColors(True)
+        self.table.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table.setEditTriggers(
+            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.verticalHeader().setVisible(False)
+        self.table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+        cw = [30, 120, 160, 100, 120, 140, 75, 90, 90]
+        for i, w in enumerate(cw):
+            self.table.setColumnWidth(i, w)
+        self.table.horizontalHeader().setStretchLastSection(False)
+        self.table.horizontalHeader().setSectionResizeMode(
+            2, QtWidgets.QHeaderView.ResizeMode.Stretch)
+
+        self.table.setStyleSheet(f"""
+            QTableWidget {{
+                border:none; background:{_WHITE};
+                alternate-background-color:#fafbfc;
+                font-size:12px; color:{_TEXT_MID};
+                font-family:'Segoe UI',Arial; outline:none;
+            }}
+            QTableWidget::item {{ padding:4px 6px; border-bottom:1px solid #f3f4f6; }}
+            QTableWidget::item:selected {{ background:#eff6ff; color:{_TEXT_DARK}; }}
+            QHeaderView::section {{
+                background:#f9fafb; color:{_TEXT_GREY};
+                font-size:10px; font-weight:bold;
+                border:none; border-bottom:1px solid {_BORDER}; padding:7px;
+            }}
+            QScrollBar:vertical {{
+                border:none; background:#f0f2f5; width:7px; border-radius:3px;
+            }}
+            QScrollBar::handle:vertical {{ background:#d1d5db; border-radius:3px; }}
+        """)
+        self.table.cellClicked.connect(self._on_row_click)
+        tvl2.addWidget(self.table)
+
+        # Pagination
+        pg_bar = QtWidgets.QWidget()
+        pg_bar.setFixedHeight(44)
+        pg_bar.setStyleSheet(f"""
+            QWidget {{
+                background:{_WHITE}; border-top:1px solid {_BORDER};
+                border-bottom-left-radius:10px; border-bottom-right-radius:10px;
+            }}
+        """)
+        pg_hl = QtWidgets.QHBoxLayout(pg_bar)
+        pg_hl.setContentsMargins(14, 0, 14, 0); pg_hl.setSpacing(4)
+        self.showing_lbl = QtWidgets.QLabel("Showing 1 to 10 of 86 requests")
+        self.showing_lbl.setStyleSheet(f"color:{_TEXT_GREY};font-size:11px;")
+        pg_hl.addWidget(self.showing_lbl); pg_hl.addStretch()
+        for txt, act in [("«",False),("‹",False),("1",True),("2",False),
+                         ("3",False),("4",False),("5",False),("›",False),("»",False)]:
+            b = QtWidgets.QPushButton(txt)
+            b.setFixedSize(26, 26)
+            b.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+            b.setStyleSheet(f"""
+                QPushButton {{
+                    background:{"#1e3a6e" if act else _WHITE};
+                    color:{"#fff" if act else _TEXT_MID};
+                    border:1px solid {"#1e3a6e" if act else _BORDER};
+                    border-radius:4px; font-size:11px;
+                }}
+                QPushButton:hover {{ background:{"#254d91" if act else "#f9fafb"}; }}
+            """)
+            pg_hl.addWidget(b)
+
+        # 10/page label
+        pg_hl.addSpacing(10)
+        pp = QtWidgets.QLabel("10 / page  ▾")
+        pp.setStyleSheet(f"color:{_TEXT_GREY};font-size:11px;")
+        pg_hl.addWidget(pp)
+
+        tvl2.addWidget(pg_bar)
+        lv.addWidget(tcard)
+
+        # ── Bottom analytics row ──────────────────────────────────────
+        bot_hl = QtWidgets.QHBoxLayout(); bot_hl.setSpacing(12)
+
+        # Donut chart card
+        donut_card = self._card()
+        dc_vl = QtWidgets.QVBoxLayout(donut_card)
+        dc_vl.setContentsMargins(14, 14, 14, 14); dc_vl.setSpacing(10)
+        dc_t = QtWidgets.QLabel("Requests by Status")
+        dc_t.setStyleSheet(f"color:{_TEXT_DARK};font-size:13px;font-weight:bold;"
+                           f"font-family:'Segoe UI',Arial;")
+        dc_vl.addWidget(dc_t)
+
+        donut_row = QtWidgets.QHBoxLayout(); donut_row.setSpacing(14)
+        self._donut = _DonutChart()
+        self._donut.setFixedSize(160, 160)
+        donut_row.addWidget(self._donut)
+
+        legend_vl = QtWidgets.QVBoxLayout(); legend_vl.setSpacing(6)
+        legends = [
+            ("Completed",  42, "48.84%", "#10b981"),
+            ("In Progress",28, "32.56%", "#3b82f6"),
+            ("Pending",    12, "13.95%", "#f59e0b"),
+            ("Overdue",     4,  "4.65%", "#ef4444"),
+        ]
+        for lname, lval, lpct, lcol in legends:
+            row = QtWidgets.QHBoxLayout(); row.setSpacing(6)
+            dot = QtWidgets.QLabel("●")
+            dot.setStyleSheet(f"color:{lcol};font-size:12px;")
+            dot.setFixedWidth(14)
+            nl = QtWidgets.QLabel(lname)
+            nl.setStyleSheet(f"color:{_TEXT_MID};font-size:11px;")
+            vr = QtWidgets.QLabel(f"{lval} ({lpct})")
+            vr.setStyleSheet(f"color:{_TEXT_GREY};font-size:11px;")
+            vr.setAlignment(Qt.AlignmentFlag.AlignRight)
+            row.addWidget(dot); row.addWidget(nl); row.addStretch(); row.addWidget(vr)
+            legend_vl.addLayout(row)
+        donut_row.addLayout(legend_vl)
+        dc_vl.addLayout(donut_row)
+        bot_hl.addWidget(donut_card, stretch=3)
+
+        # Bar chart card  (Requests by Category)
+        bar_card = self._card()
+        bc_vl = QtWidgets.QVBoxLayout(bar_card)
+        bc_vl.setContentsMargins(14, 14, 14, 14); bc_vl.setSpacing(8)
+        bc_t = QtWidgets.QLabel("Requests by Category")
+        bc_t.setStyleSheet(f"color:{_TEXT_DARK};font-size:13px;font-weight:bold;"
+                           f"font-family:'Segoe UI',Arial;")
+        bc_vl.addWidget(bc_t)
+        max_val = max(v for _, v, _ in CATEGORY_BARS)
+        for cat, val, col in CATEGORY_BARS:
+            row = QtWidgets.QHBoxLayout(); row.setSpacing(8)
+            lbl = QtWidgets.QLabel(cat)
+            lbl.setFixedWidth(82)
+            lbl.setStyleSheet(f"color:{_TEXT_MID};font-size:10px;")
+            bar_bg = QtWidgets.QFrame()
+            bar_bg.setFixedHeight(10)
+            bar_bg.setStyleSheet(f"background:#f3f4f6;border-radius:5px;")
+            bar_bg_hl = QtWidgets.QHBoxLayout(bar_bg)
+            bar_bg_hl.setContentsMargins(0,0,0,0); bar_bg_hl.setSpacing(0)
+            bar_fill = QtWidgets.QFrame()
+            bar_fill.setFixedHeight(10)
+            bar_fill.setStyleSheet(f"background:{col};border-radius:5px;")
+            pct = val / max_val
+            bar_bg_hl.addWidget(bar_fill, stretch=int(pct * 100))
+            bar_bg_hl.addStretch(int((1 - pct) * 100))
+            val_lbl = QtWidgets.QLabel(f"{val} ({val/86*100:.2f}%)")
+            val_lbl.setFixedWidth(80)
+            val_lbl.setStyleSheet(f"color:{_TEXT_GREY};font-size:10px;")
+            val_lbl.setAlignment(Qt.AlignmentFlag.AlignRight)
+            row.addWidget(lbl); row.addWidget(bar_bg, stretch=1); row.addWidget(val_lbl)
+            bc_vl.addLayout(row)
+        bot_hl.addWidget(bar_card, stretch=3)
+
+        # Top Departments card
+        dept_card = self._card()
+        dept_vl = QtWidgets.QVBoxLayout(dept_card)
+        dept_vl.setContentsMargins(14, 14, 14, 14); dept_vl.setSpacing(8)
+        dept_t = QtWidgets.QLabel("Top Requesting Departments")
+        dept_t.setStyleSheet(f"color:{_TEXT_DARK};font-size:13px;font-weight:bold;"
+                             f"font-family:'Segoe UI',Arial;")
+        dept_vl.addWidget(dept_t)
+        for icon, name, count in TOP_DEPARTMENTS:
+            row = QtWidgets.QHBoxLayout(); row.setSpacing(8)
+            il = QtWidgets.QLabel(icon)
+            il.setFixedWidth(20)
+            nl = QtWidgets.QLabel(name)
+            nl.setStyleSheet(f"color:{_TEXT_MID};font-size:11px;")
+            cl = QtWidgets.QLabel(str(count))
+            cl.setStyleSheet(f"color:{_TEXT_DARK};font-size:11px;font-weight:bold;")
+            cl.setAlignment(Qt.AlignmentFlag.AlignRight)
+            row.addWidget(il); row.addWidget(nl); row.addStretch(); row.addWidget(cl)
+            dept_vl.addLayout(row)
+        dept_vl.addStretch()
+        bot_hl.addWidget(dept_card, stretch=2)
+
+        lv.addLayout(bot_hl)
+        lv.addStretch()
+
+        scroll.setWidget(lc)
+        outer.addWidget(scroll, stretch=1)
+
+        # ════════════════════════════════════════════════════════════════
+        # RIGHT PANEL
+        # ════════════════════════════════════════════════════════════════
+        right_w = QtWidgets.QWidget()
+        right_w.setFixedWidth(268)
+        right_w.setStyleSheet(f"background:{_BG};border-left:1px solid {_BORDER};")
+
+        right_scroll = QtWidgets.QScrollArea()
+        right_scroll.setWidgetResizable(True)
+        right_scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        right_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        right_scroll.setStyleSheet("background:transparent;border:none;")
+
+        ri = QtWidgets.QWidget()
+        ri.setStyleSheet(f"background:{_BG};")
+        rv = QtWidgets.QVBoxLayout(ri)
+        rv.setContentsMargins(10, 16, 10, 16); rv.setSpacing(12)
+
+        # ── Request Details card ──────────────────────────────────────
+        rd_card = self._card()
+        rd_vl = QtWidgets.QVBoxLayout(rd_card)
+        rd_vl.setContentsMargins(14, 14, 14, 14); rd_vl.setSpacing(10)
+
+        rd_hdr = QtWidgets.QHBoxLayout()
+        rd_ico = QtWidgets.QLabel("📋")
+        rd_ico.setStyleSheet("font-size:14px;")
+        rd_title_lbl = QtWidgets.QLabel("Request Details")
+        rd_title_lbl.setStyleSheet(f"color:{_TEXT_DARK};font-size:13px;"
+                                    f"font-weight:bold;font-family:'Segoe UI',Arial;")
+        rd_hdr.addWidget(rd_ico); rd_hdr.addWidget(rd_title_lbl); rd_hdr.addStretch()
+        rd_vl.addLayout(rd_hdr)
+
+        # Selected request icon + title + status
+        ctr_vl = QtWidgets.QVBoxLayout(); ctr_vl.setSpacing(4)
+        ctr_vl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        big_ico = QtWidgets.QLabel("📋")
+        big_ico.setFixedSize(52, 52)
+        big_ico.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        big_ico.setStyleSheet("background:#eff0ff;border-radius:26px;font-size:24px;")
+        sel_title = QtWidgets.QLabel(SELECTED_REQUEST["title"])
+        sel_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        sel_title.setStyleSheet(f"color:{_TEXT_DARK};font-size:13px;"
+                                f"font-weight:bold;font-family:'Segoe UI',Arial;")
+        fg, bg = STATUS_COLOURS.get(SELECTED_REQUEST["status"], (_TEXT_MID,"#f3f4f6"))
+        st_badge = _Badge(SELECTED_REQUEST["status"], fg, bg)
+        st_row = QtWidgets.QHBoxLayout()
+        st_row.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        st_row.addWidget(st_badge)
+        ctr_vl.addWidget(big_ico, alignment=Qt.AlignmentFlag.AlignCenter)
+        ctr_vl.addWidget(sel_title)
+        ctr_vl.addLayout(st_row)
+        rd_vl.addLayout(ctr_vl)
+
+        # Divider
+        dv = QtWidgets.QFrame()
+        dv.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        dv.setStyleSheet(f"color:{_BORDER};")
+        rd_vl.addWidget(dv)
+
+        # Detail rows
+        details = [
+            ("📋", "Request ID",   SELECTED_REQUEST["req_id"]),
+            ("🏷", "Category",     SELECTED_REQUEST["category"]),
+            ("👤", "Requested By", SELECTED_REQUEST["requested_by"]),
+            ("📍", "Location",     SELECTED_REQUEST["location"]),
+            ("⚡", "Priority",     SELECTED_REQUEST["priority"]),
+            ("📅", "Requested On", SELECTED_REQUEST["requested_on"]),
+        ]
+        for d_ico, d_lbl, d_val in details:
+            row = QtWidgets.QHBoxLayout(); row.setSpacing(6)
+            il = QtWidgets.QLabel(d_ico)
+            il.setFixedWidth(18)
+            il.setStyleSheet("font-size:12px;")
+            ll = QtWidgets.QLabel(d_lbl)
+            ll.setFixedWidth(82)
+            ll.setStyleSheet(f"color:{_TEXT_GREY};font-size:10px;")
+            if d_lbl == "Priority":
+                pfg, pbg = PRIORITY_COLOURS.get(d_val, (_TEXT_MID,"#f3f4f6"))
+                vl_w = _Badge(d_val, pfg, pbg)
+            else:
+                vl_w = QtWidgets.QLabel(d_val)
+                vl_w.setStyleSheet(f"color:{_TEXT_DARK};font-size:10px;font-weight:600;")
+                vl_w.setWordWrap(True)
+            row.addWidget(il); row.addWidget(ll); row.addWidget(vl_w); row.addStretch()
+            rd_vl.addLayout(row)
+
+        # Description
+        desc_lbl = QtWidgets.QLabel("Description")
+        desc_lbl.setStyleSheet(f"color:{_TEXT_GREY};font-size:10px;")
+        desc_txt = QtWidgets.QLabel(SELECTED_REQUEST["description"])
+        desc_txt.setWordWrap(True)
+        desc_txt.setStyleSheet(f"color:{_TEXT_MID};font-size:10px;"
+                               f"background:#f9fafb;border-radius:5px;padding:6px;")
+        rd_vl.addWidget(desc_lbl)
+        rd_vl.addWidget(desc_txt)
+
+        # Assigned To + Last Updated
+        for ico2, lbl2, val2 in [
+            ("👥","Assigned To",   SELECTED_REQUEST["assigned_to"]),
+            ("🕐","Last Updated",  SELECTED_REQUEST["last_updated"]),
+        ]:
+            row = QtWidgets.QHBoxLayout(); row.setSpacing(6)
+            il = QtWidgets.QLabel(ico2); il.setFixedWidth(18)
+            il.setStyleSheet("font-size:11px;")
+            ll = QtWidgets.QLabel(lbl2)
+            ll.setFixedWidth(82)
+            ll.setStyleSheet(f"color:{_TEXT_GREY};font-size:10px;")
+            vl_w = QtWidgets.QLabel(val2)
+            vl_w.setStyleSheet(f"color:{_TEXT_DARK};font-size:10px;font-weight:600;")
+            row.addWidget(il); row.addWidget(ll); row.addWidget(vl_w); row.addStretch()
+            rd_vl.addLayout(row)
+
+        # View Full Details button
+        vfd_btn = QtWidgets.QPushButton("View Full Details")
+        vfd_btn.setFixedHeight(34)
+        vfd_btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        vfd_btn.setStyleSheet(f"""
+            QPushButton {{
+                background:{_ACCENT}; color:{_WHITE}; border:none;
+                border-radius:6px; font-size:12px; font-weight:bold;
+            }}
+            QPushButton:hover {{ background:#4a60ee; }}
+        """)
+        rd_vl.addWidget(vfd_btn)
+        rv.addWidget(rd_card)
+
+        # ── Maintenance Overview card ─────────────────────────────────
+        ov_card = self._card()
+        ov_vl = QtWidgets.QVBoxLayout(ov_card)
+        ov_vl.setContentsMargins(14, 14, 14, 14); ov_vl.setSpacing(10)
+        ov_t = QtWidgets.QLabel("Maintenance Overview (This Month)")
+        ov_t.setStyleSheet(f"color:{_TEXT_DARK};font-size:12px;font-weight:bold;"
+                           f"font-family:'Segoe UI',Arial;")
+        ov_t.setWordWrap(True)
+        ov_vl.addWidget(ov_t)
+
+        # 2x2 mini metrics
+        ov_grid = QtWidgets.QGridLayout(); ov_grid.setSpacing(8)
+        ov_tiles = [
+            ("⏱","#e0f2fe","Average Resolution Time","2.4 Days","↓ 15% from last month","#10b981"),
+            ("✅","#dcfce7","SLA Compliance","92.3%","↑ 8% from last month","#10b981"),
+            ("💰","#fef3c7","Total Cost (This Month)","KSh 245,600","↓ 6% from last month","#ef4444"),
+            ("🔩","#f3e8ff","Assets Under Maintenance","7","Currently in maintenance","#6b7280"),
+        ]
+        for i, (ico3, ibg3, lbl3, val3, sub3, sc) in enumerate(ov_tiles):
+            tile = QtWidgets.QFrame()
+            tile.setStyleSheet(f"QFrame{{background:{ibg3};border-radius:7px;}}")
+            tile_vl = QtWidgets.QVBoxLayout(tile)
+            tile_vl.setContentsMargins(8, 8, 8, 8); tile_vl.setSpacing(3)
+            ic3 = QtWidgets.QLabel(ico3)
+            ic3.setStyleSheet("font-size:16px;")
+            lb3 = QtWidgets.QLabel(lbl3)
+            lb3.setStyleSheet(f"color:{_TEXT_GREY};font-size:9px;")
+            lb3.setWordWrap(True)
+            vl3 = QtWidgets.QLabel(val3)
+            vl3.setStyleSheet(f"color:{_TEXT_DARK};font-size:14px;font-weight:bold;"
+                              f"font-family:'Segoe UI',Arial;")
+            sb3 = QtWidgets.QLabel(sub3)
+            sb3.setStyleSheet(f"color:{sc};font-size:9px;")
+            sb3.setWordWrap(True)
+            tile_vl.addWidget(ic3); tile_vl.addWidget(lb3)
+            tile_vl.addWidget(vl3); tile_vl.addWidget(sb3)
+            ov_grid.addWidget(tile, i // 2, i % 2)
+        ov_vl.addLayout(ov_grid)
+        rv.addWidget(ov_card)
+        rv.addStretch()
+
+        right_scroll.setWidget(ri)
+        rw_vl = QtWidgets.QVBoxLayout(right_w)
+        rw_vl.setContentsMargins(0,0,0,0)
+        rw_vl.addWidget(right_scroll)
+        outer.addWidget(right_w)
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # TABLE POPULATION
+    # ──────────────────────────────────────────────────────────────────────────
+    def _populate_table(self, data: list = None):
+        rows = data if data is not None else self._requests
+        self.table.setRowCount(0)
+        for i, req in enumerate(rows):
+            req_id, title, cat, req_by, loc, pri, status, req_on = req
+            self.table.insertRow(i)
+            self.table.setRowHeight(i, 46)
+
+            self._set_item(i, 0, str(i + 1))
+            self._set_item(i, 1, req_id)
+            self._set_item(i, 2, title)
+            self._set_item(i, 3, cat)
+            self._set_item(i, 4, req_by)
+            self._set_item(i, 5, loc)
+
+            # Priority badge
+            pfg, pbg = PRIORITY_COLOURS.get(pri, (_TEXT_MID, "#f3f4f6"))
+            self.table.setCellWidget(i, 6, self._centre_widget(_Badge(pri, pfg, pbg)))
+
+            # Status badge
+            sfg, sbg = STATUS_COLOURS.get(status, (_TEXT_MID, "#f3f4f6"))
+            self.table.setCellWidget(i, 7, self._centre_widget(_Badge(status, sfg, sbg)))
+
+            # Actions
+            self.table.setCellWidget(i, 8, self._action_widget(i))
+
+        count = len(rows)
+        self.showing_lbl.setText(
+            f"Showing 1 to {min(10, count)} of {count} requests")
+
+    def _set_item(self, row, col, text):
+        it = QtWidgets.QTableWidgetItem(text)
+        it.setFlags(it.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        self.table.setItem(row, col, it)
+
+    def _action_widget(self, row: int) -> QtWidgets.QWidget:
+        w = QtWidgets.QWidget()
+        hl = QtWidgets.QHBoxLayout(w)
+        hl.setContentsMargins(4, 0, 4, 0); hl.setSpacing(4)
+
+        for ico4, tip, col4, slot in [
+            ("👁","View",  "#64748b", lambda _, r=row: self._on_view(r)),
+            ("✏","Edit",  "#2563eb", lambda _, r=row: self._on_edit(r)),
+            ("🗑","Delete","#dc2626", lambda _, r=row: self._on_delete(r)),
+        ]:
+            b = QtWidgets.QPushButton(ico4)
+            b.setFixedSize(26, 26)
+            b.setToolTip(tip)
+            b.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+            b.setStyleSheet(f"""
+                QPushButton {{
+                    background:{col4}22; color:{col4};
+                    border:1px solid {col4}44; border-radius:5px; font-size:12px;
+                }}
+                QPushButton:hover {{ background:{col4}44; }}
+            """)
+            b.clicked.connect(slot)
+            hl.addWidget(b)
+        hl.addStretch()
+        return w
+
+    @staticmethod
+    def _centre_widget(widget) -> QtWidgets.QWidget:
+        w = QtWidgets.QWidget()
+        hl = QtWidgets.QHBoxLayout(w)
+        hl.addWidget(widget)
+        hl.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        hl.setContentsMargins(6, 0, 0, 0)
+        return w
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # SLOTS
+    # ──────────────────────────────────────────────────────────────────────────
+    def _on_tab(self, tab: str):
+        self._active_tab = tab
+        for name, btn in self._tab_btns.items():
+            btn.setStyleSheet(self._tab_style(name == tab))
+        self._apply_filters()
+
+    def _apply_filters(self):
+        text = self.search_edit.text().lower()
+        results = []
+        for req in self._requests:
+            req_id, title, cat, req_by, loc, pri, status, req_on = req
+            if self._active_tab not in ("All Requests", status):
+                continue
+            if text and not any(text in v.lower() for v in
+                                (req_id, title, cat, req_by, loc, pri, status)):
+                continue
+            results.append(req)
+        self._populate_table(results)
+
+    def _on_new_request(self):
+        dlg = NewRequestDialog(self)
+        dlg.request_saved.connect(self._append_request)
+        dlg.exec()
+
+    def _append_request(self, data: dict):
+        new_id = f"MNT-2025-{85 - len(self._requests):04d}"
+        self._requests.insert(0, (
+            new_id, data["title"], data["category"],
+            data["requested_by"], data["location"],
+            data["priority"], "Pending",
+            "Just now"
+        ))
+        self._apply_filters()
+        QtWidgets.QMessageBox.information(
+            self, "Request Submitted",
+            f"✅  '{data['title']}' has been submitted successfully."
+        )
+
+    def _on_row_click(self, row, col):
+        pass  # future: update right panel with selected row details
+
+    def _on_view(self, row: int):
+        if row >= len(self._requests): return
+        r = self._requests[row]
+        QtWidgets.QMessageBox.information(
+            self, "Request Details",
+            f"<b>{r[1]}</b><br>ID: {r[0]}<br>Category: {r[2]}<br>"
+            f"Requested By: {r[3]}<br>Location: {r[4]}<br>"
+            f"Priority: {r[5]}<br>Status: {r[6]}<br>Date: {r[7]}"
+        )
+
+    def _on_edit(self, row: int):
+        QtWidgets.QMessageBox.information(
+            self, "Edit Request",
+            "Edit form will be connected to the database in the next sprint."
+        )
+
+    def _on_delete(self, row: int):
+        if row >= len(self._requests): return
+        name = self._requests[row][1]
+        reply = QtWidgets.QMessageBox.question(
+            self, "Delete Request",
+            f"Delete <b>{name}</b>? This cannot be undone.",
+            QtWidgets.QMessageBox.StandardButton.Yes |
+            QtWidgets.QMessageBox.StandardButton.No,
+            QtWidgets.QMessageBox.StandardButton.No,
+        )
+        if reply == QtWidgets.QMessageBox.StandardButton.Yes:
+            self._requests.pop(row)
+            self._apply_filters()
+
+    def _on_filter_menu(self):
+        QtWidgets.QMessageBox.information(
+            self, "Advanced Filters",
+            "Advanced filter panel will be available in the next sprint."
+        )
+
+    def _on_export(self):
+        QtWidgets.QMessageBox.information(
+            self, "Export",
+            "Export functionality will be connected in the next sprint."
+        )
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # STYLE HELPERS
+    # ──────────────────────────────────────────────────────────────────────────
+    @staticmethod
+    def _card() -> QtWidgets.QFrame:
+        f = QtWidgets.QFrame()
+        f.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        f.setStyleSheet(f"""
+            QFrame {{
+                background:{_WHITE};
+                border:1px solid {_BORDER};
+                border-radius:10px;
+            }}
+        """)
+        return f
+
+    @staticmethod
+    def _outline_btn(text: str) -> QtWidgets.QPushButton:
+        btn = QtWidgets.QPushButton(text)
+        btn.setFixedHeight(34)
+        btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        btn.setStyleSheet(f"""
+            QPushButton {{
+                background:{_WHITE}; color:{_TEXT_MID};
+                border:1px solid {_BORDER}; border-radius:6px;
+                padding:0 14px; font-size:12px; font-family:'Segoe UI',Arial;
+            }}
+            QPushButton:hover {{ background:#f9fafb; }}
+        """)
+        return btn
+
+    @staticmethod
+    def _primary_btn(text: str) -> QtWidgets.QPushButton:
+        btn = QtWidgets.QPushButton(text)
+        btn.setFixedHeight(34)
+        btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        btn.setStyleSheet(f"""
+            QPushButton {{
+                background:{_ACCENT}; color:{_WHITE}; border:none;
+                border-radius:6px; padding:0 16px;
+                font-size:12px; font-weight:bold; font-family:'Segoe UI',Arial;
+            }}
+            QPushButton:hover {{ background:#4a60ee; }}
+        """)
+        return btn
+
+    @staticmethod
+    def _tab_style(active: bool) -> str:
+        if active:
+            return f"""
+                QPushButton {{
+                    background:transparent; color:{_ACCENT};
+                    border:none; border-bottom:2px solid {_ACCENT};
+                    padding:0 14px; font-size:12px; font-weight:bold;
+                    font-family:'Segoe UI',Arial;
+                }}
+            """
+        return f"""
+            QPushButton {{
+                background:transparent; color:{_TEXT_GREY};
+                border:none; border-bottom:2px solid transparent;
+                padding:0 14px; font-size:12px;
+                font-family:'Segoe UI',Arial;
+            }}
+            QPushButton:hover {{ color:{_TEXT_DARK}; }}
+        """
