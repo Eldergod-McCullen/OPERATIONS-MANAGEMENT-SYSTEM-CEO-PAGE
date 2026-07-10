@@ -1,0 +1,1686 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1604</width>
+    <height>985</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="Menubar" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>241</width>
+      <height>991</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>210</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QWidget {
+	background-color: rgb(0, 0, 66);
+}
+
+/*
+QPushButton {
+   border:	 none;
+   // padding-left: -50px;
+}
+*/
+
+QPushButton:checked {
+	background-color: rgb(88, 99, 255);
+    border: none;
+    border-radius: 50px;
+}
+</string>
+    </property>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>231</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Arial Black</family>
+       <pointsize>20</pointsize>
+       <bold>true</bold>
+       <kerning>true</kerning>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>OPERATIONS MANAGEMENT SYSTEM</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="Log_out">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>950</y>
+       <width>221</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 255, 255);</string>
+     </property>
+     <property name="text">
+      <string>Log out</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>70</y>
+       <width>241</width>
+       <height>821</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QPushButton" name="Dashboard">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);
+padding-right: 23px;
+height: 25px;</string>
+        </property>
+        <property name="text">
+         <string>Dashboard</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Users">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);
+padding-right: 55px;
+height: 25px;</string>
+        </property>
+        <property name="text">
+         <string>Users</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Departments">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Departments</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Roles">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Roles</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="IndustialAttachment_Menu">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>230</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>310</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <property name="topMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
+          <number>1</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="Industrial_Attachment">
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 255, 255);
+
+text-align: center;</string>
+           </property>
+           <property name="text">
+            <string>Insustrial Attachment</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="IndustrialAttachment_Submenu">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>273</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+  
+   padding-left: -50px;
+}
+
+QPushButton:checked {
+	background-color: rgb(88, 99, 255);
+    border-radius: 50px;
+}
+
+/*
+QPushButton:hover {
+	color: rgb(87, 113, 184);
+    border-radius: 50px;
+}
+*/</string>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <widget class="QPushButton" name="Reports_Attachment">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>250</y>
+              <width>121</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+	color: rgb(255, 255, 255);
+}
+
+QPushButton:hover {
+	color: rgb(65, 124, 213);
+}</string>
+            </property>
+            <property name="text">
+             <string>Reports</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="Evaluations">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>170</y>
+              <width>121</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+	color: rgb(255, 255, 255);
+}
+
+QPushButton:hover {
+	color: rgb(65, 124, 213);
+}</string>
+            </property>
+            <property name="text">
+             <string>Evaluations</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="Attendance">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>130</y>
+              <width>121</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+	color: rgb(255, 255, 255);
+}
+
+QPushButton:hover {
+	color: rgb(65, 124, 213);
+}</string>
+            </property>
+            <property name="text">
+             <string>Attendance</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="Applicants">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>10</y>
+              <width>121</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+	color: rgb(255, 255, 255);
+}
+
+QPushButton:hover {
+	color: rgb(65, 124, 213);
+}
+
+text-align: left;</string>
+            </property>
+            <property name="text">
+             <string>Applicants</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="Clearances">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>210</y>
+              <width>121</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+	color: rgb(255, 255, 255);
+}
+
+QPushButton:hover {
+	color: rgb(65, 124, 213);
+}</string>
+            </property>
+            <property name="text">
+             <string>Clearances</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="Interviews">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>50</y>
+              <width>121</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+	color: rgb(255, 255, 255);
+}
+
+QPushButton:hover {
+	color: rgb(65, 124, 213);
+}</string>
+            </property>
+            <property name="text">
+             <string>Interviews</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="Attachees">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>90</y>
+              <width>121</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+	color: rgb(255, 255, 255);
+}
+
+QPushButton:hover {
+	color: rgb(65, 124, 213);
+}</string>
+            </property>
+            <property name="text">
+             <string>Attachés</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Tasks">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Tasks</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Meetings">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Meetings</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Maintenance">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Maintenance</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Announcements">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Announcements</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Reports">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Reports</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Audit_Logs">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Audit Logs</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Settings">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Settings</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="MainPage" native="true">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>80</y>
+      <width>1341</width>
+      <height>910</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>245</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>910</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">/*background-color: rgb(4, 1, 83);*/
+background-color: rgb(136, 138, 175);</string>
+    </property>
+    <widget class="QStackedWidget" name="stackedWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1341</width>
+       <height>911</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(12, 65, 255);</string>
+     </property>
+     <property name="currentIndex">
+      <number>10</number>
+     </property>
+     <widget class="QWidget" name="Dashboard_Page">
+      <widget class="QLabel" name="label_7">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>250</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>DASHBOARD</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Users_Page">
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>260</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>USERS</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Departments_Page">
+      <widget class="QLabel" name="label_9">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>260</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>DEPARTMENTS</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Roles_Page">
+      <widget class="QLabel" name="label_10">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>250</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>ROLES</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="IndustrialAttachment_Page">
+      <widget class="QStackedWidget" name="stackedWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1341</width>
+         <height>841</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(0, 0, 0);</string>
+       </property>
+       <widget class="QWidget" name="Applicants_Page">
+        <widget class="QLabel" name="label_13">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>230</y>
+           <width>381</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Times New Roman</family>
+           <pointsize>30</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(1, 1, 117);</string>
+         </property>
+         <property name="text">
+          <string>APPLICANTS</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="Attachees_Page">
+        <widget class="QLabel" name="label_14">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>180</y>
+           <width>381</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Times New Roman</family>
+           <pointsize>30</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(1, 1, 117);</string>
+         </property>
+         <property name="text">
+          <string>ATTACHÉS</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="Attendance_Page">
+        <widget class="QLabel" name="label_16">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>160</y>
+           <width>381</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Times New Roman</family>
+           <pointsize>30</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(1, 1, 117);</string>
+         </property>
+         <property name="text">
+          <string>ATTENDANCE</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="Evaluations_Page">
+        <widget class="QLabel" name="label_18">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>170</y>
+           <width>381</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Times New Roman</family>
+           <pointsize>30</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(1, 1, 117);</string>
+         </property>
+         <property name="text">
+          <string>EVALUATIONS</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="AttachmentReports_Page">
+        <widget class="QLabel" name="label_15">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>210</y>
+           <width>471</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Times New Roman</family>
+           <pointsize>30</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(1, 1, 117);</string>
+         </property>
+         <property name="text">
+          <string>ATTACHMENT REPORTS</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="Interviews_Page">
+        <widget class="QLabel" name="label_19">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>140</y>
+           <width>381</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Times New Roman</family>
+           <pointsize>30</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(1, 1, 117);</string>
+         </property>
+         <property name="text">
+          <string>INTERVIEWS</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="Clearances_Page">
+        <widget class="QLabel" name="label_17">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>130</y>
+           <width>381</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Times New Roman</family>
+           <pointsize>30</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(1, 1, 117);</string>
+         </property>
+         <property name="text">
+          <string>CLEARANCES</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="label_12">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>840</y>
+         <width>601</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>INDUSTRIAL ATTACHMENT</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Tasks_Page">
+      <widget class="QLabel" name="label_11">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>260</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>TASKS</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Meetings_Page">
+      <widget class="QLabel" name="label_21">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>240</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>MEETINGS</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Maintenance_Page">
+      <widget class="QLabel" name="label_22">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>240</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>MAINTENANCE</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Announcements_Page">
+      <widget class="QLabel" name="label_23">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>250</y>
+         <width>441</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>ANNOUNCEMENTS</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Reports_Page">
+      <widget class="QLabel" name="label_25">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>230</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>REPORTS</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="AuditLogs_Page">
+      <widget class="QLabel" name="label_24">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>810</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>AUDIT LOGS</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="filterBar">
+       <property name="geometry">
+        <rect>
+         <x>2</x>
+         <y>0</y>
+         <width>1341</width>
+         <height>64</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="filterHLayout">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <property name="leftMargin">
+         <number>16</number>
+        </property>
+        <property name="topMargin">
+         <number>12</number>
+        </property>
+        <property name="rightMargin">
+         <number>16</number>
+        </property>
+        <property name="bottomMargin">
+         <number>12</number>
+        </property>
+        <item>
+         <widget class="QLineEdit" name="searchEdit">
+          <property name="placeholderText">
+           <string>🔍  Search logs by user, action or record...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="actionTypeVLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="filterLabel">
+            <property name="text">
+             <string>Action Type</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="filterCombo">
+            <item>
+             <property name="text">
+              <string>All Actions</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>LOGIN</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>LOGOUT</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CREATE</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>UPDATE</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>DELETE</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>VIEW</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>EXPORT</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="userVLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="filterLabel_2">
+            <property name="text">
+             <string>User</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="filterCombo_2">
+            <item>
+             <property name="text">
+              <string>All Users</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Jane Mwangi</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>John Kamau</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Peter Otieno</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Mary Wanjiku</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Samuel Mutua</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Grace Njeri</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="tableAffVLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="filterLabel_3">
+            <property name="text">
+             <string>Table Affected</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="filterCombo_3">
+            <item>
+             <property name="text">
+              <string>All Tables</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>USERS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>TASKS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ANNOUNCEMENTS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>VISITORS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>MAINTENANCE_REQUESTS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>REPORTS</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="dateFromVLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="filterLabel_4">
+            <property name="text">
+             <string>Date From</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDateEdit" name="dateEdit">
+            <property name="displayFormat">
+             <string>dd/MM/yyyy</string>
+            </property>
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+            <property name="date">
+             <date>
+              <year>2025</year>
+              <month>1</month>
+              <day>6</day>
+             </date>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="dateToVLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="filterLabel_5">
+            <property name="text">
+             <string>Date To</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDateEdit" name="dateEdit_2">
+            <property name="displayFormat">
+             <string>dd/MM/yyyy</string>
+            </property>
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+            <property name="date">
+             <date>
+              <year>2025</year>
+              <month>1</month>
+              <day>7</day>
+             </date>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="filterBtnVLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>14</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="filterBtn">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>⚙ Filters</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="resetBtnVLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>14</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="resetBtn">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>↺ Reset</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="filterBarSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="exportBtnVLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>14</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="exportBtn">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>⬇ Export</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="actionsBtnVLayout">
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item>
+           <spacer>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>14</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="actionsBtn">
+            <property name="cursor">
+             <cursorShape>PointingHandCursor</cursorShape>
+            </property>
+            <property name="text">
+             <string>Actions ▾</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Settings_Page">
+      <widget class="QLabel" name="label_20">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>270</y>
+         <width>321</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Times New Roman</family>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>SETTINGS</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="Header" native="true">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>0</y>
+      <width>1341</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>245</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(102, 97, 255);</string>
+    </property>
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>20</y>
+       <width>241</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border-color: rgb(106, 0, 0);
+QLineEdit {
+   padding-left: 90px;
+   border: 0.95px;
+   border-radius: 12px;
+}
+
+</string>
+     </property>
+     <property name="placeholderText">
+      <string>Search here....................</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line">
+     <property name="geometry">
+      <rect>
+       <x>600</x>
+       <y>10</y>
+       <width>21</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>620</x>
+       <y>20</y>
+       <width>50</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">/* INSERT AN IMAGE USING PIXMAP */</string>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>1220</x>
+       <y>40</y>
+       <width>49</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_3">
+     <property name="geometry">
+      <rect>
+       <x>1170</x>
+       <y>20</y>
+       <width>118</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>1220</x>
+       <y>10</y>
+       <width>49</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>342</width>
+       <height>67</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="Menu_Button">
+        <property name="styleSheet">
+         <string notr="true">border: none;</string>
+        </property>
+        <property name="text">
+         <string>Menu icon</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Greetings McCULLEN</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="font">
+           <font>
+            <family>Leelawadee UI</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>WELCOME TO YOUR PAGE</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QSlider" name="verticalSlider">
+    <property name="geometry">
+     <rect>
+      <x>1580</x>
+      <y>0</y>
+      <width>22</width>
+      <height>871</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>2</width>
+      <height>2</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_4"/>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>Industrial_Attachment</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>IndustrialAttachment_Submenu</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>229</x>
+     <y>291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>229</x>
+     <y>460</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Menu_Button</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Menubar</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>297</x>
+     <y>36</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>234</x>
+     <y>72</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

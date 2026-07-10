@@ -1,0 +1,1044 @@
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtCore import Qt, QSortFilterProxyModel
+from PyQt6.QtGui import QStandardItemModel, QStandardItem
+
+
+# ── Shared colour palette (matches CEO_Page.py) ───────────────────────────────
+_NAVY       = "#0d1b3e"
+_BLUE_ACT   = "#1e3a6e"
+_ACCENT     = "#5870ff"
+_BG         = "#f0f2f5"
+_WHITE      = "#ffffff"
+_BORDER     = "#e5e7eb"
+_TEXT_DARK  = "#1a1a2e"
+_TEXT_GREY  = "#6b7280"
+_TEXT_MID   = "#374151"
+
+
+# ── Role badge colours  (text, background) ────────────────────────────────────
+ROLE_COLOURS: dict[str, tuple[str, str]] = {
+    "Administrator":      ("#3b4fd8", "#eff0ff"),
+    "CEO":                ("#1a6e2e", "#e6f4ea"),
+    "General Manager":    ("#0e7c6b", "#e0f7f4"),
+    "Operations Manager": ("#b45309", "#fef3c7"),
+    "IT Manager":         ("#0369a1", "#e0f2fe"),
+    "Marketing Officer":  ("#9333ea", "#f3e8ff"),
+    "Operations Officer": ("#d97706", "#fffbeb"),
+    "HR Officer":         ("#0f766e", "#ccfbf1"),
+    "Finance Officer":    ("#1d4ed8", "#dbeafe"),
+    "Receptionist":       ("#374151", "#f3f4f6"),
+    "COO":                ("#6d28d9", "#ede9fe"),
+}
+
+# ── Status badge colours ──────────────────────────────────────────────────────
+STATUS_COLOURS: dict[str, tuple[str, str]] = {
+    "Active":   ("#15803d", "#dcfce7"),
+    "Inactive": ("#b91c1c", "#fee2e2"),
+}
+
+# ── Sample data ───────────────────────────────────────────────────────────────
+SAMPLE_USERS = [
+    ("001", "Jane Mwangi",     "jane.mwangi@mfanobora.co.ke",     "Administrator",      "Administration",       "Active",   "01 Jul 2025 08:32 AM"),
+    ("002", "John Kamau",      "john.kamau@mfanobora.co.ke",      "CEO",                "Executive Office",     "Active",   "01 Jul 2025 07:58 AM"),
+    ("003", "Mary Wanjiku",    "mary.wanjiku@mfanobora.co.ke",    "General Manager",    "Management",           "Active",   "30 Jun 2025 04:15 PM"),
+    ("004", "Peter Otieno",    "peter.otieno@mfanobora.co.ke",    "Operations Manager", "Operations",           "Inactive",   "01 Jul 2025 08:20 AM"),
+    ("005", "Samuel Mutua",    "samuel.mutua@mfanobora.co.ke",    "IT Manager",         "Information Technology","Active",  "30 Jun 2025 09:47 AM"),
+    ("006", "Grace Njeri",     "grace.njeri@mfanobora.co.ke",     "Marketing Officer",  "Marketing",            "Active",   "30 Jun 2025 03:21 PM"),
+    ("007", "David Ochieng",   "david.ochieng@mfanobora.co.ke",   "Operations Officer", "Operations",           "Inactive", "18 Jun 2025 11:09 AM"),
+    ("008", "Lilian Akinyi",   "lilian.akinyi@mfanobora.co.ke",   "HR Officer",         "Human Resources",      "Active",   "29 Jun 2025 01:12 PM"),
+    ("009", "Joseph Kariuki",  "joseph.kariuki@mfanobora.co.ke",  "Finance Officer",    "Finance",              "Active",   "01 Jul 2025 08:05 AM"),
+    ("010", "Caroline Muthoni","caroline.muthoni@mfanobora.co.ke","Receptionist",       "Administration",       "Active",   "01 Jul 2025 07:14 AM"),
+]
+
+DEPARTMENTS = [
+    "Administration", "Executive Office", "Management", "Operations",
+    "Information Technology", "Marketing", "Human Resources", "Finance",
+]
+
+ROLES = list(ROLE_COLOURS.keys())
+
+# ==============================================================================
+# BADGE  helper widget
+# ==============================================================================
+class _Badge(QtWidgets.QLabel):
+    """A pill-shaped coloured label for roles / statuses."""
+    def __init__(self, text: str, fg: str, bg: str, parent=None):
+        super().__init__(text, parent)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setFixedHeight(22)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed,
+                           QtWidgets.QSizePolicy.Policy.Fixed)
+        self.setStyleSheet(f"""
+            QLabel {{
+                color: {fg};
+                background-color: {bg};
+                border-radius: 10px;
+                padding: 0px 10px;
+                font-size: 11px;
+                font-weight: 600;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }}
+        """)
+
+
+# ==============================================================================
+# STAT CARD
+# ==============================================================================
+class _StatCard(QtWidgets.QFrame):
+    def __init__(self, icon: str, label: str, value: str, sublabel: str,
+                 icon_bg: str = "#eff6ff", icon_fg: str = "#3b82f6", parent=None):
+        super().__init__(parent)
+        self.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self.setStyleSheet(f"""
+            QFrame {{
+                background-color: {_WHITE};
+                border: 1px solid {_BORDER};
+                border-radius: 10px;
+            }}
+        """)
+
+        hl = QtWidgets.QHBoxLayout(self)
+        hl.setContentsMargins(18, 14, 18, 14)
+        hl.setSpacing(14)
+
+        # Icon circle
+        icon_lbl = QtWidgets.QLabel(icon)
+        icon_lbl.setFixedSize(42, 42)
+        icon_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon_lbl.setStyleSheet(f"""
+            QLabel {{
+                background-color: {icon_bg};
+                border-radius: 21px;
+                font-size: 18px;
+            }}
+        """)
+
+        # Text stack
+        vl = QtWidgets.QVBoxLayout()
+        vl.setSpacing(2)
+
+        lbl_top = QtWidgets.QLabel(label)
+        lbl_top.setStyleSheet(f"color: {_TEXT_GREY}; font-size: 11px;")
+
+        lbl_val = QtWidgets.QLabel(value)
+        lbl_val.setStyleSheet(f"""
+            color: {_TEXT_DARK};
+            font-size: 26px;
+            font-weight: bold;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        """)
+
+        lbl_sub = QtWidgets.QLabel(sublabel)
+        lbl_sub.setStyleSheet(f"color: {_TEXT_GREY}; font-size: 11px;")
+
+        vl.addWidget(lbl_top)
+        vl.addWidget(lbl_val)
+        vl.addWidget(lbl_sub)
+
+        hl.addWidget(icon_lbl)
+        hl.addLayout(vl)
+        hl.addStretch()
+
+
+# ==============================================================================
+# ADD / EDIT USER  DIALOG
+# ==============================================================================
+class AddUserDialog(QtWidgets.QDialog):
+    """
+    Modal dialog for adding a new user (or editing an existing one).
+    Emits  user_saved(dict)  when the form is accepted.
+    """
+
+    user_saved = QtCore.pyqtSignal(dict)
+
+    def __init__(self, parent=None, user_data: dict = None):
+        super().__init__(parent)
+        self._edit_mode = user_data is not None
+        self.setWindowTitle("Edit User" if self._edit_mode else "Add New User")
+        self.setModal(True)
+        self.setFixedSize(520, 620)
+        self.setStyleSheet(f"""
+            QDialog {{
+                background-color: {_WHITE};
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }}
+            QLabel#sectionHead {{
+                color: {_TEXT_DARK};
+                font-size: 15px;
+                font-weight: bold;
+            }}
+            QLabel#sectionSub {{
+                color: {_TEXT_GREY};
+                font-size: 12px;
+            }}
+            QLabel#fieldLabel {{
+                color: {_TEXT_MID};
+                font-size: 12px;
+                font-weight: 600;
+            }}
+            QLineEdit, QComboBox {{
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                padding: 8px 12px;
+                font-size: 13px;
+                color: {_TEXT_DARK};
+                background-color: #f9fafb;
+            }}
+            QLineEdit:focus, QComboBox:focus {{
+                border: 1.5px solid {_ACCENT};
+                background-color: {_WHITE};
+            }}
+            QLineEdit[readOnly="true"] {{
+                background-color: #f3f4f6;
+                color: {_TEXT_GREY};
+            }}
+            QPushButton#cancelBtn {{
+                background-color: {_WHITE};
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                padding: 9px 24px;
+                font-size: 13px;
+                color: {_TEXT_MID};
+            }}
+            QPushButton#cancelBtn:hover {{
+                background-color: #f9fafb;
+            }}
+            QPushButton#saveBtn {{
+                background-color: {_ACCENT};
+                border: none;
+                border-radius: 6px;
+                padding: 9px 28px;
+                font-size: 13px;
+                font-weight: bold;
+                color: {_WHITE};
+            }}
+            QPushButton#saveBtn:hover {{
+                background-color: #4a60ee;
+            }}
+            QFrame#divider {{
+                border: none;
+                border-top: 1px solid {_BORDER};
+            }}
+        """)
+
+        root = QtWidgets.QVBoxLayout(self)
+        root.setContentsMargins(28, 24, 28, 20)
+        root.setSpacing(0)
+
+        # ── Dialog header ──────────────────────────────────────────────────────
+        hdr_icon = QtWidgets.QLabel("👤")
+        hdr_icon.setFixedSize(40, 40)
+        hdr_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        hdr_icon.setStyleSheet(f"""
+            QLabel {{
+                background-color: #eff0ff;
+                border-radius: 20px;
+                font-size: 18px;
+            }}
+        """)
+
+        hdr_vl = QtWidgets.QVBoxLayout()
+        hdr_vl.setSpacing(2)
+        hdr_title = QtWidgets.QLabel("Edit User" if self._edit_mode else "Add New User")
+        hdr_title.setObjectName("sectionHead")
+        hdr_sub = QtWidgets.QLabel("Fill in the details below to add a new system user." if not self._edit_mode
+                                   else "Update the user's information below.")
+        hdr_sub.setObjectName("sectionSub")
+        hdr_vl.addWidget(hdr_title)
+        hdr_vl.addWidget(hdr_sub)
+
+        hdr_hl = QtWidgets.QHBoxLayout()
+        hdr_hl.setSpacing(12)
+        hdr_hl.addWidget(hdr_icon)
+        hdr_hl.addLayout(hdr_vl)
+        hdr_hl.addStretch()
+        root.addLayout(hdr_hl)
+        root.addSpacing(16)
+
+        div0 = QtWidgets.QFrame(); div0.setObjectName("divider"); div0.setFixedHeight(1)
+        root.addWidget(div0)
+        root.addSpacing(18)
+
+        # ── Form grid ─────────────────────────────────────────────────────────
+        form = QtWidgets.QFormLayout()
+        form.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+        form.setFormAlignment(Qt.AlignmentFlag.AlignTop)
+        form.setHorizontalSpacing(16)
+        form.setVerticalSpacing(14)
+        form.setContentsMargins(0, 0, 0, 0)
+
+        def _lbl(text):
+            l = QtWidgets.QLabel(text)
+            l.setObjectName("fieldLabel")
+            return l
+
+        # Full Name
+        self.fullName_edit = QtWidgets.QLineEdit()
+        self.fullName_edit.setPlaceholderText("e.g. Jane Mwangi")
+        form.addRow(_lbl("Full Name *"), self.fullName_edit)
+
+        # Email
+        self.email_edit = QtWidgets.QLineEdit()
+        self.email_edit.setPlaceholderText("e.g. jane@mfanobora.co.ke")
+        form.addRow(_lbl("Email Address *"), self.email_edit)
+
+        # Phone
+        self.phone_edit = QtWidgets.QLineEdit()
+        self.phone_edit.setPlaceholderText("e.g. +254 712 345 678")
+        form.addRow(_lbl("Phone Number"), self.phone_edit)
+
+        # Role
+        self.role_combo = QtWidgets.QComboBox()
+        self.role_combo.addItem("— Select Role —")
+        for r in ROLES:
+            self.role_combo.addItem(r)
+        form.addRow(_lbl("Role *"), self.role_combo)
+
+        # Department
+        self.dept_combo = QtWidgets.QComboBox()
+        self.dept_combo.addItem("— Select Department —")
+        for d in DEPARTMENTS:
+            self.dept_combo.addItem(d)
+        form.addRow(_lbl("Department *"), self.dept_combo)
+
+        # Status
+        self.status_combo = QtWidgets.QComboBox()
+        self.status_combo.addItems(["Active", "Inactive"])
+        form.addRow(_lbl("Status"), self.status_combo)
+
+        # Password  (only for new users)
+        if not self._edit_mode:
+            self.password_edit = QtWidgets.QLineEdit()
+            self.password_edit.setPlaceholderText("Temporary password")
+            self.password_edit.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+            form.addRow(_lbl("Temporary Password *"), self.password_edit)
+
+            self.confirm_edit = QtWidgets.QLineEdit()
+            self.confirm_edit.setPlaceholderText("Confirm password")
+            self.confirm_edit.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+            form.addRow(_lbl("Confirm Password *"), self.confirm_edit)
+
+        root.addLayout(form)
+
+        # ── Pre-fill if editing ────────────────────────────────────────────────
+        if self._edit_mode and user_data:
+            self.fullName_edit.setText(user_data.get("name", ""))
+            self.email_edit.setText(user_data.get("email", ""))
+            self.phone_edit.setText(user_data.get("phone", ""))
+            idx = self.role_combo.findText(user_data.get("role", ""))
+            if idx >= 0:
+                self.role_combo.setCurrentIndex(idx)
+            idx = self.dept_combo.findText(user_data.get("department", ""))
+            if idx >= 0:
+                self.dept_combo.setCurrentIndex(idx)
+            idx = self.status_combo.findText(user_data.get("status", "Active"))
+            if idx >= 0:
+                self.status_combo.setCurrentIndex(idx)
+
+        root.addStretch()
+
+        # ── Validation error label ─────────────────────────────────────────────
+        self.error_lbl = QtWidgets.QLabel("")
+        self.error_lbl.setStyleSheet("color: #b91c1c; font-size: 11px;")
+        self.error_lbl.setVisible(False)
+        root.addWidget(self.error_lbl)
+        root.addSpacing(10)
+
+        # ── Divider ───────────────────────────────────────────────────────────
+        div1 = QtWidgets.QFrame(); div1.setObjectName("divider"); div1.setFixedHeight(1)
+        root.addWidget(div1)
+        root.addSpacing(14)
+
+        # ── Buttons ───────────────────────────────────────────────────────────
+        btn_hl = QtWidgets.QHBoxLayout()
+        btn_hl.addStretch()
+
+        self.cancel_btn = QtWidgets.QPushButton("Cancel")
+        self.cancel_btn.setObjectName("cancelBtn")
+        self.cancel_btn.setFixedHeight(38)
+        self.cancel_btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        self.cancel_btn.clicked.connect(self.reject)
+
+        self.save_btn = QtWidgets.QPushButton(
+            "💾  Save Changes" if self._edit_mode else "✚  Add User"
+        )
+        self.save_btn.setObjectName("saveBtn")
+        self.save_btn.setFixedHeight(38)
+        self.save_btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        self.save_btn.clicked.connect(self._on_save)
+
+        btn_hl.addWidget(self.cancel_btn)
+        btn_hl.addSpacing(10)
+        btn_hl.addWidget(self.save_btn)
+        root.addLayout(btn_hl)
+
+    # ── Validation + emit ──────────────────────────────────────────────────────
+    def _on_save(self):
+        name  = self.fullName_edit.text().strip()
+        email = self.email_edit.text().strip()
+        role  = self.role_combo.currentText()
+        dept  = self.dept_combo.currentText()
+
+        errors = []
+        if not name:
+            errors.append("Full Name is required.")
+        if not email or "@" not in email:
+            errors.append("A valid Email Address is required.")
+        if role.startswith("—"):
+            errors.append("Please select a Role.")
+        if dept.startswith("—"):
+            errors.append("Please select a Department.")
+
+        if not self._edit_mode:
+            pwd = self.password_edit.text()
+            cpwd = self.confirm_edit.text()
+            if len(pwd) < 6:
+                errors.append("Password must be at least 6 characters.")
+            elif pwd != cpwd:
+                errors.append("Passwords do not match.")
+
+        if errors:
+            self.error_lbl.setText("⚠  " + "  •  ".join(errors))
+            self.error_lbl.setVisible(True)
+            return
+
+        self.error_lbl.setVisible(False)
+        data = {
+            "name":       name,
+            "email":      email,
+            "phone":      self.phone_edit.text().strip(),
+            "role":       role,
+            "department": dept,
+            "status":     self.status_combo.currentText(),
+        }
+        self.user_saved.emit(data)
+        self.accept()
+
+
+# ==============================================================================
+# USERS PAGE  (dropped into stackedWidget index 1)
+# ==============================================================================
+class UsersPage(QtWidgets.QWidget):
+    """
+    Full Users Management page.
+    Self-contained — owns its own data model, table, filters and dialogs.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("Users_Page")
+        self.setStyleSheet(f"background-color: {_BG};")
+
+        # Internal user list (mirrors DB in production)
+        self._users: list[tuple] = list(SAMPLE_USERS)
+
+        self._build_ui()
+        self._populate_table()
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # UI CONSTRUCTION
+    # ──────────────────────────────────────────────────────────────────────────
+    def _build_ui(self):
+        root = QtWidgets.QVBoxLayout(self)
+        root.setContentsMargins(24, 20, 24, 20)
+        root.setSpacing(16)
+
+        # ── Page header row ───────────────────────────────────────────────────
+        hdr_hl = QtWidgets.QHBoxLayout()
+        hdr_hl.setSpacing(14)
+
+        icon_lbl = QtWidgets.QLabel("👥")
+        icon_lbl.setFixedSize(44, 44)
+        icon_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon_lbl.setStyleSheet(f"""
+            QLabel {{
+                background-color: #eff0ff;
+                border-radius: 22px;
+                font-size: 20px;
+            }}
+        """)
+
+        title_vl = QtWidgets.QVBoxLayout()
+        title_vl.setSpacing(2)
+        pg_title = QtWidgets.QLabel("Users Management")
+        pg_title.setStyleSheet(f"""
+            color: {_TEXT_DARK};
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        """)
+        pg_sub = QtWidgets.QLabel("Create, manage and assign roles to system users.")
+        pg_sub.setStyleSheet(f"color: {_TEXT_GREY}; font-size: 12px;")
+        title_vl.addWidget(pg_title)
+        title_vl.addWidget(pg_sub)
+
+        hdr_hl.addWidget(icon_lbl)
+        hdr_hl.addLayout(title_vl)
+        hdr_hl.addStretch()
+
+        # Action buttons
+        self.import_btn = self._action_btn("  ↑  Import Users", primary=False)
+        self.add_btn    = self._action_btn("  ＋  Add New User", primary=True)
+        self.actions_btn = self._action_btn("  Actions  ▾", primary=False)
+
+        self.import_btn.clicked.connect(self._on_import)
+        self.add_btn.clicked.connect(self._on_add_user)
+        self.actions_btn.clicked.connect(self._on_actions)
+
+        hdr_hl.addWidget(self.import_btn)
+        hdr_hl.addWidget(self.add_btn)
+        hdr_hl.addWidget(self.actions_btn)
+
+        root.addLayout(hdr_hl)
+
+        # ── Stat cards row ────────────────────────────────────────────────────
+        cards_hl = QtWidgets.QHBoxLayout()
+        cards_hl.setSpacing(14)
+
+        self.card_total    = _StatCard("👥", "Total Users",           "45", "Active accounts",    "#eff0ff", "#5870ff")
+        self.card_active   = _StatCard("✅", "Active Users",          "41", "Currently active",   "#e6f9f0", "#10b981")
+        self.card_inactive = _StatCard("⛔", "Inactive Users",         "4",  "Disabled accounts",  "#fff0f0", "#ef4444")
+        self.card_month    = _StatCard("🆕", "Users Added This Month", "6",  "New registrations",  "#fffbeb", "#f59e0b")
+
+        for card in (self.card_total, self.card_active, self.card_inactive, self.card_month):
+            cards_hl.addWidget(card)
+
+        root.addLayout(cards_hl)
+
+        # ── Filter / search bar ───────────────────────────────────────────────
+        filter_hl = QtWidgets.QHBoxLayout()
+        filter_hl.setSpacing(10)
+
+        self.search_edit = QtWidgets.QLineEdit()
+        self.search_edit.setPlaceholderText("🔍   Search by name, email or role...")
+        self.search_edit.setFixedHeight(38)
+        self.search_edit.setMinimumWidth(300)
+        self.search_edit.setStyleSheet(f"""
+            QLineEdit {{
+                border: 1px solid {_BORDER};
+                border-radius: 6px;
+                padding: 0px 14px;
+                font-size: 12px;
+                color: {_TEXT_MID};
+                background-color: {_WHITE};
+            }}
+            QLineEdit:focus {{
+                border: 1.5px solid {_ACCENT};
+            }}
+        """)
+        self.search_edit.textChanged.connect(self._on_search)
+
+        self.role_filter = QtWidgets.QComboBox()
+        self.role_filter.setFixedHeight(38)
+        self.role_filter.setMinimumWidth(160)
+        self.role_filter.addItem("All Roles")
+        for r in ROLES:
+            self.role_filter.addItem(r)
+        self.role_filter.setStyleSheet(f"""
+            QComboBox {{
+                border: 1px solid {_BORDER};
+                border-radius: 6px;
+                padding: 0px 12px;
+                font-size: 12px;
+                color: {_TEXT_MID};
+                background-color: {_WHITE};
+            }}
+            QComboBox:focus {{ border: 1.5px solid {_ACCENT}; }}
+            QComboBox::drop-down {{ border: none; width: 24px; }}
+        """)
+        self.role_filter.currentIndexChanged.connect(self._on_filter)
+
+        filter_hl.addWidget(self.search_edit)
+        filter_hl.addWidget(self.role_filter)
+        filter_hl.addStretch()
+
+        # Refresh + Filters buttons
+        self.refresh_btn = self._icon_btn("↻")
+        self.filter_btn  = self._action_btn("▼  Filters", primary=False)
+        self.refresh_btn.clicked.connect(self._on_refresh)
+
+        filter_hl.addWidget(self.refresh_btn)
+        filter_hl.addWidget(self.filter_btn)
+
+        root.addLayout(filter_hl)
+
+        # ── Table card ────────────────────────────────────────────────────────
+        table_card = QtWidgets.QFrame()
+        table_card.setObjectName("tableCard")
+        table_card.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        table_card.setStyleSheet(f"""
+            QFrame#tableCard {{
+                background-color: {_WHITE};
+                border: 1px solid {_BORDER};
+                border-radius: 10px;
+            }}
+        """)
+        card_vl = QtWidgets.QVBoxLayout(table_card)
+        card_vl.setContentsMargins(0, 0, 0, 0)
+        card_vl.setSpacing(0)
+
+        # Table
+        self.table = QtWidgets.QTableWidget()
+        self.table.setObjectName("usersTable")
+        self.table.setColumnCount(9)
+        self.table.setHorizontalHeaderLabels([
+            "", "ID", "Full Name", "Email Address",
+            "Role", "Department", "Status", "Last Login", "Actions"
+        ])
+        self.table.setShowGrid(False)
+        self.table.setAlternatingRowColors(True)
+        self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.verticalHeader().setVisible(False)
+        self.table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.table.horizontalHeader().setStretchLastSection(False)
+        self.table.setSortingEnabled(True)
+
+        # Column widths
+        self.table.setColumnWidth(0, 40)   # checkbox
+        self.table.setColumnWidth(1, 55)   # ID
+        self.table.setColumnWidth(2, 150)  # name
+        self.table.setColumnWidth(3, 230)  # email
+        self.table.setColumnWidth(4, 160)  # role
+        self.table.setColumnWidth(5, 185)  # department
+        self.table.setColumnWidth(6, 80)   # status
+        self.table.setColumnWidth(7, 165)  # last login
+        self.table.setColumnWidth(8, 100)  # actions
+
+        self.table.setStyleSheet(f"""
+            QTableWidget {{
+                border: none;
+                background-color: {_WHITE};
+                alternate-background-color: #fafbfc;
+                font-size: 12px;
+                color: {_TEXT_MID};
+                font-family: 'Segoe UI', Arial, sans-serif;
+                outline: none;
+            }}
+            QTableWidget::item {{
+                padding: 6px 8px;
+                border-bottom: 1px solid #f3f4f6;
+            }}
+            QTableWidget::item:selected {{
+                background-color: #eff6ff;
+                color: {_TEXT_DARK};
+            }}
+            QHeaderView::section {{
+                background-color: #f9fafb;
+                color: {_TEXT_GREY};
+                font-size: 11px;
+                font-weight: bold;
+                text-transform: uppercase;
+                border: none;
+                border-bottom: 1px solid {_BORDER};
+                padding: 8px;
+            }}
+            QScrollBar:vertical {{
+                border: none;
+                background: #f0f2f5;
+                width: 8px;
+                border-radius: 4px;
+            }}
+            QScrollBar::handle:vertical {{
+                background: #d1d5db;
+                border-radius: 4px;
+            }}
+        """)
+        self.table.setRowHeight(0, 52)
+
+        card_vl.addWidget(self.table)
+
+        # ── Pagination bar ────────────────────────────────────────────────────
+        self.paginationBar = QtWidgets.QWidget()
+        self.paginationBar.setFixedHeight(48)
+        self.paginationBar.setStyleSheet(f"""
+            QWidget {{
+                background-color: {_WHITE};
+                border-top: 1px solid {_BORDER};
+                border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }}
+        """)
+        pg_hl = QtWidgets.QHBoxLayout(self.paginationBar)
+        pg_hl.setContentsMargins(16, 0, 16, 0)
+        pg_hl.setSpacing(6)
+
+        self.showing_lbl = QtWidgets.QLabel("Showing 1 to 10 of 45 users")
+        self.showing_lbl.setStyleSheet(f"color: {_TEXT_GREY}; font-size: 12px;")
+        pg_hl.addWidget(self.showing_lbl)
+        pg_hl.addStretch()
+
+        for text, name in [("«","pg_first"), ("‹","pg_prev"),
+                            ("1","pg_1"), ("2","pg_2"), ("3","pg_3"),
+                            ("4","pg_4"), ("5","pg_5"),
+                            ("›","pg_next"), ("»","pg_last")]:
+            btn = QtWidgets.QPushButton(text)
+            btn.setObjectName(name)
+            btn.setFixedSize(30, 30)
+            btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+            is_active = (text == "1")
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {"#1e3a6e" if is_active else _WHITE};
+                    color: {"#ffffff" if is_active else _TEXT_MID};
+                    border: 1px solid {"#1e3a6e" if is_active else _BORDER};
+                    border-radius: 4px;
+                    font-size: 12px;
+                    font-weight: {"bold" if is_active else "normal"};
+                }}
+                QPushButton:hover {{
+                    background-color: {"#254d91" if is_active else "#f9fafb"};
+                }}
+            """)
+            pg_hl.addWidget(btn)
+
+        card_vl.addWidget(self.paginationBar)
+        root.addWidget(table_card)
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # TABLE POPULATION
+    # ──────────────────────────────────────────────────────────────────────────
+    def _populate_table(self, users: list = None):
+        data = users if users is not None else self._users
+        self.table.setRowCount(0)
+
+        for row_idx, user in enumerate(data):
+            uid, name, email, role, dept, status, last_login = user
+            self.table.insertRow(row_idx)
+            self.table.setRowHeight(row_idx, 52)
+
+            # Col 0 — checkbox
+            chk = QtWidgets.QCheckBox()
+            chk_widget = QtWidgets.QWidget()
+            chk_hl = QtWidgets.QHBoxLayout(chk_widget)
+            chk_hl.addWidget(chk)
+            chk_hl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            chk_hl.setContentsMargins(0, 0, 0, 0)
+            self.table.setCellWidget(row_idx, 0, chk_widget)
+
+            # Col 1 — ID
+            self._set_item(row_idx, 1, uid)
+
+            # Col 2 — Full Name (bold)
+            name_item = QtWidgets.QTableWidgetItem(name)
+            name_item.setFont(QtGui.QFont("Segoe UI", 12, QtGui.QFont.Weight.Bold))
+            self.table.setItem(row_idx, 2, name_item)
+
+            # Col 3 — Email
+            self._set_item(row_idx, 3, email)
+
+            # Col 4 — Role badge
+            fg, bg = ROLE_COLOURS.get(role, (_TEXT_MID, "#f3f4f6"))
+            role_badge = _Badge(role, fg, bg)
+            badge_w = self._centre_widget(role_badge)
+            self.table.setCellWidget(row_idx, 4, badge_w)
+
+            # Col 5 — Department
+            self._set_item(row_idx, 5, dept)
+
+            # Col 6 — Status badge
+            sfg, sbg = STATUS_COLOURS.get(status, (_TEXT_MID, "#f3f4f6"))
+            status_badge = _Badge(status, sfg, sbg)
+            status_w = self._centre_widget(status_badge)
+            self.table.setCellWidget(row_idx, 6, status_w)
+
+            # Col 7 — Last Login
+            self._set_item(row_idx, 7, last_login)
+
+            # Col 8 — Action buttons (edit | delete | more)
+            action_w = self._make_action_widget(row_idx)
+            self.table.setCellWidget(row_idx, 8, action_w)
+
+    def _set_item(self, row: int, col: int, text: str):
+        item = QtWidgets.QTableWidgetItem(text)
+        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+        self.table.setItem(row, col, item)
+
+    @staticmethod
+    def _centre_widget(widget: QtWidgets.QWidget) -> QtWidgets.QWidget:
+        container = QtWidgets.QWidget()
+        hl = QtWidgets.QHBoxLayout(container)
+        hl.addWidget(widget)
+        hl.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        hl.setContentsMargins(8, 0, 0, 0)
+        return container
+
+    def _make_action_widget(self, row: int) -> QtWidgets.QWidget:
+        w = QtWidgets.QWidget()
+        hl = QtWidgets.QHBoxLayout(w)
+        hl.setContentsMargins(6, 0, 6, 0)
+        hl.setSpacing(4)
+
+        edit_btn = QtWidgets.QPushButton("✏")
+        edit_btn.setFixedSize(28, 28)
+        edit_btn.setToolTip("Edit user")
+        edit_btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        edit_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2563eb;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 12px;
+            }
+            QPushButton:hover { background-color: #1d4ed8; }
+        """)
+        edit_btn.clicked.connect(lambda _, r=row: self._on_edit_user(r))
+
+        del_btn = QtWidgets.QPushButton("🗑")
+        del_btn.setFixedSize(28, 28)
+        del_btn.setToolTip("Delete user")
+        del_btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        del_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #dc2626;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 12px;
+            }
+            QPushButton:hover { background-color: #b91c1c; }
+        """)
+        del_btn.clicked.connect(lambda _, r=row: self._on_delete_user(r))
+
+        more_btn = QtWidgets.QPushButton("⋮")
+        more_btn.setFixedSize(28, 28)
+        more_btn.setToolTip("More options")
+        more_btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        more_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #f3f4f6;
+                color: #374151;
+                border: 1px solid #e5e7eb;
+                border-radius: 5px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+            QPushButton:hover { background-color: #e5e7eb; }
+        """)
+        more_btn.clicked.connect(lambda _, r=row, b=more_btn: self._on_more(r, b))
+
+        hl.addWidget(edit_btn)
+        hl.addWidget(del_btn)
+        hl.addWidget(more_btn)
+        hl.addStretch()
+        return w
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # BUTTON HELPERS
+    # ──────────────────────────────────────────────────────────────────────────
+    @staticmethod
+    def _action_btn(text: str, primary: bool = False) -> QtWidgets.QPushButton:
+        btn = QtWidgets.QPushButton(text)
+        btn.setFixedHeight(38)
+        btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        if primary:
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {_ACCENT};
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 0px 18px;
+                    font-size: 13px;
+                    font-weight: bold;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                }}
+                QPushButton:hover {{ background-color: #4a60ee; }}
+            """)
+        else:
+            btn.setStyleSheet(f"""
+                QPushButton {{
+                    background-color: {_WHITE};
+                    color: {_TEXT_MID};
+                    border: 1px solid {_BORDER};
+                    border-radius: 6px;
+                    padding: 0px 16px;
+                    font-size: 13px;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                }}
+                QPushButton:hover {{ background-color: #f9fafb; }}
+            """)
+        return btn
+
+    @staticmethod
+    def _icon_btn(icon: str) -> QtWidgets.QPushButton:
+        btn = QtWidgets.QPushButton(icon)
+        btn.setFixedSize(38, 38)
+        btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+        btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {_WHITE};
+                color: {_TEXT_MID};
+                border: 1px solid {_BORDER};
+                border-radius: 6px;
+                font-size: 16px;
+            }}
+            QPushButton:hover {{ background-color: #f9fafb; }}
+        """)
+        return btn
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # SLOTS / EVENT HANDLERS
+    # ──────────────────────────────────────────────────────────────────────────
+    def _on_add_user(self):
+        dlg = AddUserDialog(parent=self)
+        dlg.user_saved.connect(self._append_user)
+        dlg.exec()
+
+    def _append_user(self, data: dict):
+        """Add a newly created user to the internal list and refresh the table."""
+        new_id = f"{len(self._users) + 1:03d}"
+        row = (
+            new_id,
+            data["name"],
+            data["email"],
+            data["role"],
+            data["department"],
+            data["status"],
+            "Just now",
+        )
+        self._users.append(row)
+        self._populate_table()
+        self._update_stats()
+        QtWidgets.QMessageBox.information(
+            self, "User Added",
+            f"✅  {data['name']} has been added successfully."
+        )
+
+    def _on_edit_user(self, row: int):
+        if row >= len(self._users):
+            return
+        u = self._users[row]
+        user_data = {
+            "name": u[1], "email": u[2], "role": u[3],
+            "department": u[4], "status": u[5], "phone": "",
+        }
+        dlg = AddUserDialog(parent=self, user_data=user_data)
+        dlg.user_saved.connect(lambda data, r=row: self._save_edit(r, data))
+        dlg.exec()
+
+    def _save_edit(self, row: int, data: dict):
+        old = self._users[row]
+        self._users[row] = (
+            old[0], data["name"], data["email"],
+            data["role"], data["department"], data["status"], old[6],
+        )
+        self._populate_table()
+        self._update_stats()
+
+    def _on_delete_user(self, row: int):
+        if row >= len(self._users):
+            return
+        name = self._users[row][1]
+        reply = QtWidgets.QMessageBox.question(
+            self, "Delete User",
+            f"Are you sure you want to delete <b>{name}</b>?<br>"
+            f"This action cannot be undone.",
+            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No,
+            QtWidgets.QMessageBox.StandardButton.No,
+        )
+        if reply == QtWidgets.QMessageBox.StandardButton.Yes:
+            self._users.pop(row)
+            self._populate_table()
+            self._update_stats()
+
+    def _on_more(self, row: int, button: QtWidgets.QPushButton):
+        menu = QtWidgets.QMenu(self)
+        menu.setStyleSheet(f"""
+            QMenu {{
+                background-color: {_WHITE};
+                border: 1px solid {_BORDER};
+                border-radius: 6px;
+                padding: 4px 0;
+                font-size: 12px;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }}
+            QMenu::item {{ color: {_TEXT_MID}; padding: 8px 20px; }}
+            QMenu::item:selected {{ background-color: #eff6ff; color: {_NAVY}; }}
+            QMenu::separator {{ height: 1px; background: {_BORDER}; margin: 4px 0; }}
+        """)
+        menu.addAction("👁  View Details",  lambda: self._on_edit_user(row))
+        menu.addAction("✏  Edit User",     lambda: self._on_edit_user(row))
+        menu.addAction("🔑  Reset Password", lambda: self._msg_placeholder("Reset Password"))
+        menu.addSeparator()
+        menu.addAction("⛔  Deactivate",   lambda: self._toggle_status(row))
+        menu.addSeparator()
+        menu.addAction("🗑  Delete",        lambda: self._on_delete_user(row))
+        pos = button.mapToGlobal(QtCore.QPoint(0, button.height()))
+        menu.exec(pos)
+
+    def _toggle_status(self, row: int):
+        u = list(self._users[row])
+        u[5] = "Inactive" if u[5] == "Active" else "Active"
+        self._users[row] = tuple(u)
+        self._populate_table()
+        self._update_stats()
+
+    def _on_search(self, text: str):
+        text = text.lower()
+        role_filter = self.role_filter.currentText()
+        results = []
+        for u in self._users:
+            role_ok = (role_filter == "All Roles" or u[3] == role_filter)
+            text_ok = (not text or
+                       text in u[1].lower() or
+                       text in u[2].lower() or
+                       text in u[3].lower())
+            if role_ok and text_ok:
+                results.append(u)
+        self._populate_table(results)
+
+    def _on_filter(self):
+        self._on_search(self.search_edit.text())
+
+    def _on_refresh(self):
+        self.search_edit.clear()
+        self.role_filter.setCurrentIndex(0)
+        self._populate_table()
+
+    def _on_import(self):
+        self._msg_placeholder("Import Users")
+
+    def _on_actions(self):
+        btn = self.actions_btn
+        menu = QtWidgets.QMenu(self)
+        menu.setStyleSheet(f"""
+            QMenu {{
+                background-color: {_WHITE};
+                border: 1px solid {_BORDER};
+                border-radius: 6px;
+                padding: 4px 0;
+                font-size: 12px;
+            }}
+            QMenu::item {{ color: {_TEXT_MID}; padding: 8px 20px; }}
+            QMenu::item:selected {{ background-color: #eff6ff; }}
+        """)
+        menu.addAction("📥  Export CSV")
+        menu.addAction("📋  Export PDF")
+        menu.addSeparator()
+        menu.addAction("🗑  Delete Selected")
+        pos = btn.mapToGlobal(QtCore.QPoint(0, btn.height()))
+        menu.exec(pos)
+
+    def _update_stats(self):
+        total    = len(self._users)
+        active   = sum(1 for u in self._users if u[5] == "Active")
+        inactive = total - active
+        # Update stat card values
+        self.card_total.findChild(QtWidgets.QLabel, "").deleteLater() if False else None
+        # Simple approach — rebuild label text by finding the bold number label
+        for card, val in [(self.card_total, str(total)),
+                          (self.card_active, str(active)),
+                          (self.card_inactive, str(inactive))]:
+            for lbl in card.findChildren(QtWidgets.QLabel):
+                if lbl.font().pointSize() >= 20 or "bold" in lbl.styleSheet():
+                    if lbl.text().isdigit():
+                        lbl.setText(val)
+                        break
+
+    def _msg_placeholder(self, feature: str):
+        QtWidgets.QMessageBox.information(
+            self, feature,
+            f"'{feature}' will be connected to the database in the next sprint."
+        )
