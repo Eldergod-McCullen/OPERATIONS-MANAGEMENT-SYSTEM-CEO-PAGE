@@ -488,9 +488,8 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.Meetings_Page)
 
         # ── Page 7: Maintenance ──────────────────────────────────────────────
-        self.Maintenance_Page = QtWidgets.QWidget()
-        self.Maintenance_Page.setObjectName("Maintenance_Page")
-        self._placeholder(self.Maintenance_Page, "MAINTENANCE", "#5870ff")
+        from Maintenance_Page import MaintenancePage
+        self.Maintenance_Page = MaintenancePage()
         self.stackedWidget.addWidget(self.Maintenance_Page)
 
         # ── Page 8: Announcements ────────────────────────────────────────────
@@ -506,9 +505,8 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.Reports_Page)
 
         # ── Page 10: Audit Logs ──────────────────────────────────────────────
-        self.AuditLogs_Page = QtWidgets.QWidget()
-        self.AuditLogs_Page.setObjectName("AuditLogs_Page")
-        self._placeholder(self.AuditLogs_Page, "AUDIT LOGS", "#5870ff")
+        from AuditLogs_Page import AuditLogsPage
+        self.AuditLogs_Page = AuditLogsPage()
         self.stackedWidget.addWidget(self.AuditLogs_Page)
 
         # ── Page 11: Settings ────────────────────────────────────────────────
