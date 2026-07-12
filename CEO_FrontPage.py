@@ -15,6 +15,7 @@ class CEOPage(QMainWindow, Ui_MainWindow):
     Drives the smooth sidebar expand/collapse animation via QPropertyAnimation.
     Manages the Industrial Attachment submenu expand/collapse.
     Keeps track of which button is currently active so the highlight stays correct.
+    THIS PAGE BASICALLY CONTAINS THE BACKEND LOGI OF HOW THE ENTIRE FRAME OF THE CEO PAGE WORKS
     """
 
     def __init__(self):

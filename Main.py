@@ -1,3 +1,4 @@
+# THIS IS THE EXECUTABLE PYTHON FILE-THE FILE TO BE RUN
 from PyQt6.QtWidgets import QApplication
 from CEO_FrontPage import CEOPage
 import sys

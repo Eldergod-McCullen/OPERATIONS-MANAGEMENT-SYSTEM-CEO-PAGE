@@ -426,15 +426,18 @@ class Ui_MainWindow(object):
         self.stackedWidget.setObjectName("stackedWidget")
         self.stackedWidget.setStyleSheet("background-color: #f0f2f5;")
 
-        # ── Page 0: Dashboard ─────────────────────────────────────────────────
-                
+        # ── Page 0: Dashboard ───────────────────────────────────────────────── DAVID
+        self.Dashboard_Page = QtWidgets.QWidget()
+        self.Dashboard_Page.setObjectName("Dashboard_Page")
+        self._placeholder(self.Dashboard_Page, "DASHBOARD", "#5870ff")
+        self.stackedWidget.addWidget(self.Dashboard_Page)
 
         # ── Page 1: Users ────────────────────────────────────────────────────
         from Users_Page import UsersPage
         self.Users_Page = UsersPage()
         self.stackedWidget.addWidget(self.Users_Page)
 
-        # ── Page 2: Departments ──────────────────────────────────────────────
+        # ── Page 2: Departments ────────────────────────────────────────────── LAWRENCE
         self.Departments_Page = QtWidgets.QWidget()
         self.Departments_Page.setObjectName("Departments_Page")
         self._placeholder(self.Departments_Page, "DEPARTMENTS", "#5870ff")
@@ -446,7 +449,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.Departments_Page)
         """
 
-        # ── Page 3: Roles ────────────────────────────────────────────────────
+        # ── Page 3: Roles ──────────────────────────────────────────────────── LEWIS
         self.Roles_Page = QtWidgets.QWidget()
         self.Roles_Page.setObjectName("Roles_Page")
         self._placeholder(self.Roles_Page, "ROLES", "#5870ff")
@@ -489,7 +492,7 @@ class Ui_MainWindow(object):
         self.Tasks_Page = TasksPage()
         self.stackedWidget.addWidget(self.Tasks_Page)
 
-        # ── Page 6: Meetings ─────────────────────────────────────────────────
+        # ── Page 6: Meetings ───────────────────────────────────────────────── SHIRLEY
         self.Meetings_Page = QtWidgets.QWidget()
         self.Meetings_Page.setObjectName("Meetings_Page")
         self._placeholder(self.Meetings_Page, "MEETINGS", "#5870ff")
@@ -507,18 +510,12 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.Maintenance_Page)
 
         # ── Page 8: Announcements ────────────────────────────────────────────
-        self.Announcements_Page = QtWidgets.QWidget()
-        self.Announcements_Page.setObjectName("Announcements_Page")
-        self._placeholder(self.Announcements_Page, "ANNOUNCEMENTS", "#5870ff")
+        from Announcements_Page import AnnouncementsPage
+        self.Announcements_Page = AnnouncementsPage()
         self.stackedWidget.addWidget(self.Announcements_Page)
         
-        """
-        from Anouncements_Page import AnnouncmentsPage
-        self.Announcments_Page = AnnouncmentsPage()
-        self.stackedWidget.addWidget(self.Announcments_Page)
-        """
 
-        # ── Page 9: Reports ──────────────────────────────────────────────────
+        # ── Page 9: Reports ────────────────────────────────────────────────── SHIRLEY
         self.Reports_Page = QtWidgets.QWidget()
         self.Reports_Page.setObjectName("Reports_Page")
         self._placeholder(self.Reports_Page, "REPORTS", "#5870ff")
