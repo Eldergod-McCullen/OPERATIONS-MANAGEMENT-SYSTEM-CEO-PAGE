@@ -12,8 +12,8 @@ class CEOPage(QMainWindow, Ui_MainWindow):
     Responsibilities:
     ─────────────────
     Wires every sidebar navigation button to its corresponding stacked-widget page.
-    Drives the smooth sidebar expand / collapse animation via QPropertyAnimation.
-    Manages the Industrial Attachment submenu expand / collapse.
+    Drives the smooth sidebar expand/collapse animation via QPropertyAnimation.
+    Manages the Industrial Attachment submenu expand/collapse.
     Keeps track of which button is currently active so the highlight stays correct.
     """
 
@@ -69,7 +69,6 @@ class CEOPage(QMainWindow, Ui_MainWindow):
     # ==========================================================================
     # SIDEBAR TOGGLE
     # ==========================================================================
-
     def toggle_sidebar(self):
         """Smoothly expand or collapse the sidebar."""
         if self._sidebar_expanded:
@@ -105,7 +104,6 @@ class CEOPage(QMainWindow, Ui_MainWindow):
     # ==========================================================================
     # INDUSTRIAL ATTACHMENT  — expand / collapse submenu
     # ==========================================================================
-
     def toggle_ia_submenu(self):
         """Show or hide the Industrial Attachment sub-navigation items."""
         visible = self.IndustrialAttachment_Submenu.isVisible()

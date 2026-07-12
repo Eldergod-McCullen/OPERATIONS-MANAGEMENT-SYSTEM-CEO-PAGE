@@ -427,10 +427,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.setStyleSheet("background-color: #f0f2f5;")
 
         # ── Page 0: Dashboard ─────────────────────────────────────────────────
-        self.Dashboard_Page = QtWidgets.QWidget()
-        self.Dashboard_Page.setObjectName("Dashboard_Page")
-        self._placeholder(self.Dashboard_Page, "DASHBOARD", "#5870ff")
-        self.stackedWidget.addWidget(self.Dashboard_Page)
+                
 
         # ── Page 1: Users ────────────────────────────────────────────────────
         from Users_Page import UsersPage
@@ -442,12 +439,24 @@ class Ui_MainWindow(object):
         self.Departments_Page.setObjectName("Departments_Page")
         self._placeholder(self.Departments_Page, "DEPARTMENTS", "#5870ff")
         self.stackedWidget.addWidget(self.Departments_Page)
+        
+        """
+        from Departments_Page import DepartmentsPage
+        self.Departments_Page = DepartmentsPage()
+        self.stackedWidget.addWidget(self.Departments_Page)
+        """
 
         # ── Page 3: Roles ────────────────────────────────────────────────────
         self.Roles_Page = QtWidgets.QWidget()
         self.Roles_Page.setObjectName("Roles_Page")
         self._placeholder(self.Roles_Page, "ROLES", "#5870ff")
         self.stackedWidget.addWidget(self.Roles_Page)
+        
+        """
+        from Roles_Page import RolesPage
+        self.Roles_Page = RolesPage()
+        self.stackedWidget.addWidget(self.Roles_Page)
+        """
 
         # ── Page 4: Industrial Attachment  (nested stacked widget) ───────────
         self.IndustrialAttachment_Page = QtWidgets.QWidget()
@@ -476,9 +485,8 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.IndustrialAttachment_Page)
 
         # ── Page 5: Tasks ────────────────────────────────────────────────────
-        self.Tasks_Page = QtWidgets.QWidget()
-        self.Tasks_Page.setObjectName("Tasks_Page")
-        self._placeholder(self.Tasks_Page, "TASKS", "#5870ff")
+        from Tasks_Page import TasksPage
+        self.Tasks_Page = TasksPage()
         self.stackedWidget.addWidget(self.Tasks_Page)
 
         # ── Page 6: Meetings ─────────────────────────────────────────────────
@@ -486,7 +494,13 @@ class Ui_MainWindow(object):
         self.Meetings_Page.setObjectName("Meetings_Page")
         self._placeholder(self.Meetings_Page, "MEETINGS", "#5870ff")
         self.stackedWidget.addWidget(self.Meetings_Page)
-
+        
+        """
+        from Meetings_Page import MeetingsPage
+        self.Meetings_Page = MeetingsPage()
+        self.stackedWidget.addWidget(self.Meetings_Page)
+        """
+        
         # ── Page 7: Maintenance ──────────────────────────────────────────────
         from Maintenance_Page import MaintenancePage
         self.Maintenance_Page = MaintenancePage()
@@ -497,12 +511,24 @@ class Ui_MainWindow(object):
         self.Announcements_Page.setObjectName("Announcements_Page")
         self._placeholder(self.Announcements_Page, "ANNOUNCEMENTS", "#5870ff")
         self.stackedWidget.addWidget(self.Announcements_Page)
+        
+        """
+        from Anouncements_Page import AnnouncmentsPage
+        self.Announcments_Page = AnnouncmentsPage()
+        self.stackedWidget.addWidget(self.Announcments_Page)
+        """
 
         # ── Page 9: Reports ──────────────────────────────────────────────────
         self.Reports_Page = QtWidgets.QWidget()
         self.Reports_Page.setObjectName("Reports_Page")
         self._placeholder(self.Reports_Page, "REPORTS", "#5870ff")
         self.stackedWidget.addWidget(self.Reports_Page)
+        
+        """
+        from Reports_Page import ReportsPage
+        self.Reports_Page = ReportsPage()
+        self.stackedWidget.addWidget(self.Reports_Page)
+        """        
 
         # ── Page 10: Audit Logs ──────────────────────────────────────────────
         from AuditLogs_Page import AuditLogsPage
@@ -515,6 +541,11 @@ class Ui_MainWindow(object):
         self._placeholder(self.Settings_Page, "SETTINGS", "#5870ff")
         self.stackedWidget.addWidget(self.Settings_Page)
 
+        """
+        from Settings_Page import SettingsPage
+        self.Settings_Page = SettingsPage()
+        self.stackedWidget.addWidget(self.Settings_Page)
+        """
         # Default page
         self.stackedWidget.setCurrentIndex(0)
 
