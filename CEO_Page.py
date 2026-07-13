@@ -179,11 +179,11 @@ class Ui_MainWindow(object):
             self.sidebarLayout.addWidget(btn)
 
         # ── Industrial Attachment expandable group ────────────────────────────
-        self.IndustialAttachment_Menu = QtWidgets.QFrame()
-        self.IndustialAttachment_Menu.setObjectName("IndustialAttachment_Menu")
-        self.IndustialAttachment_Menu.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.IndustialAttachment_Menu.setStyleSheet("background: transparent;")
-        iaVL = QtWidgets.QVBoxLayout(self.IndustialAttachment_Menu)
+        self.IndustrialAttachment_Menu = QtWidgets.QFrame()
+        self.IndustrialAttachment_Menu.setObjectName("IndustrialAttachment_Menu")
+        self.IndustrialAttachment_Menu.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self.IndustrialAttachment_Menu.setStyleSheet("background: transparent;")
+        iaVL = QtWidgets.QVBoxLayout(self.IndustrialAttachment_Menu)
         iaVL.setContentsMargins(0, 0, 0, 0)
         iaVL.setSpacing(0)
 
@@ -214,7 +214,7 @@ class Ui_MainWindow(object):
 
         self.IndustrialAttachment_Submenu.setVisible(False)
         iaVL.addWidget(self.IndustrialAttachment_Submenu)
-        self.sidebarLayout.addWidget(self.IndustialAttachment_Menu)
+        self.sidebarLayout.addWidget(self.IndustrialAttachment_Menu)
 
         # ── Remaining main nav buttons ────────────────────────────────────────
         self.Tasks         = self._make_nav_btn("  ✅   Tasks",        checkable=True)
@@ -467,7 +467,11 @@ class Ui_MainWindow(object):
         iaPageLayout = QtWidgets.QVBoxLayout(self.IndustrialAttachment_Page)
         iaPageLayout.setContentsMargins(0, 0, 0, 0)
         iaPageLayout.setSpacing(0)
-
+        
+        from IndustrialAttachment_Page import IndustrialAttachmentPage
+        self.IndustrialAttachment_Page = IndustrialAttachmentPage()
+        self.stackedWidget.addWidget(self.IndustrialAttachment_Page)  
+        
         self.stackedWidget_2 = QtWidgets.QStackedWidget()
         self.stackedWidget_2.setObjectName("stackedWidget_2")
         self.stackedWidget_2.setStyleSheet("background-color: #f0f2f5;")
@@ -484,8 +488,8 @@ class Ui_MainWindow(object):
                     self.Interviews_Page,self.Clearances_Page):
             self.stackedWidget_2.addWidget(page)
 
-        iaPageLayout.addWidget(self.stackedWidget_2)
-        self.stackedWidget.addWidget(self.IndustrialAttachment_Page)
+        #iaPageLayout.addWidget(self.stackedWidget_2)                  LEAVE THESE TWO LINES COMMENTED OUT,THEY ARE NOT NEEDED. THEY WERE CAUSING THE IA PAGE TO BE EMPTY WHEN CLICKED ON.
+        #self.stackedWidget.addWidget(self.IndustrialAttachment_Page)  ADD THE INDUSTRIAL ATTACHMENT PAGES FIRST
 
         # ── Page 5: Tasks ────────────────────────────────────────────────────
         from Tasks_Page import TasksPage
@@ -533,16 +537,10 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.AuditLogs_Page)
 
         # ── Page 11: Settings ────────────────────────────────────────────────
-        self.Settings_Page = QtWidgets.QWidget()
-        self.Settings_Page.setObjectName("Settings_Page")
-        self._placeholder(self.Settings_Page, "SETTINGS", "#5870ff")
-        self.stackedWidget.addWidget(self.Settings_Page)
-
-        """
         from Settings_Page import SettingsPage
         self.Settings_Page = SettingsPage()
         self.stackedWidget.addWidget(self.Settings_Page)
-        """
+        
         # Default page
         self.stackedWidget.setCurrentIndex(0)
 
