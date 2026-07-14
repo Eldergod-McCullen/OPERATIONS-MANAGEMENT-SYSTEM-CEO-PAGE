@@ -49,8 +49,7 @@ SAMPLE_REQUESTS = [
     ("MNT-2025-0077","Chair Wheels Broken",    "Furniture",   "Aisha Hassan",   "Workstation 12",   "Low",   "Pending",    "18 Jun 2025 11:40 AM"),
 ]
 
-CATEGORIES = ["All Categories","Electrical","Equipment","Plumbing","Mechanical",
-               "Carpentry","Civil","IT & Network","Furniture"]
+CATEGORIES = ["All Categories","Electrical","Equipment","Plumbing","Mechanical","Carpentry","Civil","IT & Network","Furniture"]
 
 # Category bar chart data: (label, count, colour)
 CATEGORY_BARS = [
@@ -89,7 +88,6 @@ SELECTED_REQUEST = {
     "last_updated":"22 Jun 2025 10:30 AM",
 }
 
-
 # ==============================================================================
 # BADGE helper
 # ==============================================================================
@@ -111,7 +109,6 @@ class _Badge(QtWidgets.QLabel):
                 font-family: 'Segoe UI', Arial, sans-serif;
             }}
         """)
-
 
 # ==============================================================================
 # DONUT CHART  (Requests by Status)
@@ -169,7 +166,6 @@ class _DonutChart(QtWidgets.QWidget):
                    Qt.AlignmentFlag.AlignCenter, "Total")
         p.end()
 
-
 # ==============================================================================
 # STAT CARD (top row)
 # ==============================================================================
@@ -225,7 +221,6 @@ class _StatCard(QtWidgets.QFrame):
         hl.addWidget(icon_lbl)
         hl.addLayout(vl)
         hl.addStretch()
-
 
 # ==============================================================================
 # NEW REQUEST DIALOG
@@ -391,7 +386,6 @@ class NewRequestDialog(QtWidgets.QDialog):
         })
         self.accept()
 
-
 # =================================================================================
 # MAINTENANCE PAGE
 # ==============================================================================
@@ -545,10 +539,8 @@ class MaintenancePage(QtWidgets.QWidget):
         ])
         self.table.setShowGrid(False)
         self.table.setAlternatingRowColors(True)
-        self.table.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
-        self.table.setEditTriggers(
-            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
         self.table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
@@ -876,8 +868,7 @@ class MaintenancePage(QtWidgets.QWidget):
             lb3.setStyleSheet(f"color:{_TEXT_GREY};font-size:9px;")
             lb3.setWordWrap(True)
             vl3 = QtWidgets.QLabel(val3)
-            vl3.setStyleSheet(f"color:{_TEXT_DARK};font-size:14px;font-weight:bold;"
-                              f"font-family:'Segoe UI',Arial;")
+            vl3.setStyleSheet(f"color:{_TEXT_DARK};font-size:14px;font-weight:bold;"f"font-family:'Segoe UI',Arial;")
             sb3 = QtWidgets.QLabel(sub3)
             sb3.setStyleSheet(f"color:{sc};font-size:9px;")
             sb3.setWordWrap(True)

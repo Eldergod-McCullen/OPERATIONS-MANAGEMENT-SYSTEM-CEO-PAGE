@@ -119,7 +119,6 @@ class _Badge(QtWidgets.QLabel):
             }}
         """)
 
-
 # ==============================================================================
 # DONUT CHART  (Announcement Overview)
 # ==============================================================================
@@ -355,7 +354,6 @@ class NewAnnouncementDialog(QtWidgets.QDialog):
         })
         self.accept()
 
-
 # ==============================================================================
 # ANNOUNCEMENTS PAGE
 # ==============================================================================
@@ -479,15 +477,14 @@ class AnnouncementsPage(QtWidgets.QWidget):
         ])
         self.table.setShowGrid(False)
         self.table.setAlternatingRowColors(True)
-        self.table.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
-        self.table.setEditTriggers(
-            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.verticalHeader().setVisible(False)
         self.table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
         for i, w in enumerate([30, 230, 70, 72, 145, 82, 155, 90]):
             self.table.setColumnWidth(i, w)
+            
         self.table.horizontalHeader().setSectionResizeMode(
             1, QtWidgets.QHeaderView.ResizeMode.Stretch)
 
@@ -779,9 +776,7 @@ class AnnouncementsPage(QtWidgets.QWidget):
         rp_vl.addWidget(rp_scroll)
         outer.addWidget(rp)
 
-    # ──────────────────────────────────────────────────────────────────────────
-    # TABLE POPULATION
-    # ──────────────────────────────────────────────────────────────────────────
+    # ======================== TABLE POPULATION ==============================================================================================================================
     def _populate_table(self, data: list = None):
         rows = data if data is not None else self._announcements
         self.table.setRowCount(0)
@@ -854,9 +849,7 @@ class AnnouncementsPage(QtWidgets.QWidget):
         hl.addStretch()
         return w
 
-    # ──────────────────────────────────────────────────────────────────────────
-    # SLOTS
-    # ──────────────────────────────────────────────────────────────────────────
+    # ================================ SLOTS =========================================================================================================================================
     def _on_tab(self, tab: str):
         self._active_tab = tab
         for name, btn in self._tab_btns.items():

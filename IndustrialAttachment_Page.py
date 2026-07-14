@@ -1,19 +1,4 @@
-
-# HOW TO INTEGRATE
-# ────────────────
-# In CEO_Page.py, replace the IndustrialAttachment_Page placeholder block with:
-#
-#   from industrial_attachments_page import IndustrialAttachmentPage
-#   self.IndustrialAttachment_Page = IndustrialAttachmentPage()
-#   self.stackedWidget.addWidget(self.IndustrialAttachment_Page)   # index 4
-#
-# CEO_FrontPage.py — update open_IndustrialAttachment_Page() and all sub-page
-# methods to call:
-#   self.stackedWidget.setCurrentIndex(4)
-#   self.IndustrialAttachment_Page.switch_tab("Applicants")   # or whichever tab
-
-
-# Form implementation generated from reading ui file 'Settings_Page.ui'
+# Form implementation generated from reading ui file 'IndustrialAttachment_Page.ui'
 #
 # Created by: PyQt6 UI code generator 6.4.2
 #
@@ -111,7 +96,6 @@ class _Badge(QtWidgets.QLabel):
             }}
         """)
 
-
 def _card(parent=None) -> QtWidgets.QFrame:
     f = QtWidgets.QFrame(parent)
     f.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
@@ -123,7 +107,6 @@ def _card(parent=None) -> QtWidgets.QFrame:
         }}
     """)
     return f
-
 
 def _outline_btn(text: str) -> QtWidgets.QPushButton:
     btn = QtWidgets.QPushButton(text)
@@ -140,7 +123,6 @@ def _outline_btn(text: str) -> QtWidgets.QPushButton:
     """)
     return btn
 
-
 def _primary_btn(text: str) -> QtWidgets.QPushButton:
     btn = QtWidgets.QPushButton(text)
     btn.setFixedHeight(34)
@@ -155,7 +137,6 @@ def _primary_btn(text: str) -> QtWidgets.QPushButton:
         QPushButton:hover {{ background:#4a60ee; }}
     """)
     return btn
-
 
 def _tab_style(active: bool) -> str:
     if active:
@@ -176,7 +157,6 @@ def _tab_style(active: bool) -> str:
         }}
         QPushButton:hover {{ color:{_TEXT_DARK}; }}
     """
-
 
 # ==============================================================================
 # DONUT CHART
@@ -216,7 +196,6 @@ class _DonutChart(QtWidgets.QWidget):
                    Qt.AlignmentFlag.AlignCenter, str(self._total))
         p.end()
 
-
 # ==============================================================================
 # STAT CARD
 # ==============================================================================
@@ -249,7 +228,6 @@ class _StatCard(QtWidgets.QFrame):
         sub.setStyleSheet(f"color:{_TEXT_GREY};font-size:10px;")
         vl.addWidget(top); vl.addWidget(val); vl.addWidget(sub)
         hl.addWidget(il); hl.addLayout(vl); hl.addStretch()
-
 
 # ==============================================================================
 # NEW APPLICANT DIALOG

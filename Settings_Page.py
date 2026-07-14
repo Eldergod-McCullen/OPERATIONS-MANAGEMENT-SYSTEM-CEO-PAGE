@@ -18,7 +18,6 @@ _TEXT_DARK = "#1a1a2e"
 _TEXT_GREY = "#6b7280"
 _TEXT_MID  = "#374151"
 
-
 # ── Reusable style helpers ──────────────────────────────────────────────────
 def _field_style() -> str:
     return f"""
@@ -47,7 +46,6 @@ def _field_style() -> str:
         }}
     """
 
-
 def _section_title(text: str, icon: str = "") -> QtWidgets.QLabel:
     lbl = QtWidgets.QLabel(f"{icon}  {text}" if icon else text)
     lbl.setStyleSheet(f"""
@@ -58,12 +56,10 @@ def _section_title(text: str, icon: str = "") -> QtWidgets.QLabel:
     """)
     return lbl
 
-
 def _field_label(text: str) -> QtWidgets.QLabel:
     lbl = QtWidgets.QLabel(text)
     lbl.setStyleSheet(f"color: {_TEXT_GREY}; font-size: 11px;")
     return lbl
-
 
 def _card(parent=None) -> QtWidgets.QFrame:
     f = QtWidgets.QFrame(parent)

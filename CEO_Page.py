@@ -13,7 +13,7 @@ SIDEBAR_COLLAPSED = 60
 
 class Ui_MainWindow(object):
 
-    # ──────────────────────────────────────────────────────────────────────────
+    # ========================== MAIN WINDOW SET UP =======================================================================================================================
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1440, 900)
@@ -170,42 +170,41 @@ class Ui_MainWindow(object):
         self.sidebarLayout.addWidget(self.menuSectionLabel)
 
         # ── Nav buttons ───────────────────────────────────────────────────────
-        self.Dashboard = self._make_nav_btn("  🏠   Dashboard",  checkable=True)
-        self.Users     = self._make_nav_btn("  👥   Users",       checkable=True)
-        self.Departments = self._make_nav_btn("  🏢   Departments", checkable=True)
-        self.Roles     = self._make_nav_btn("  🔑   Roles",       checkable=True)
+        self.Dashboard   = self._make_nav_btn("  \U0001f3e0   Dashboard",   checkable=True)
+        self.Users       = self._make_nav_btn("  \U0001f465   Users",        checkable=True)
+        self.Departments = self._make_nav_btn("  \U0001f3e2   Departments",  checkable=True)
+        self.Roles       = self._make_nav_btn("  \U0001f511   Roles",        checkable=True)
 
-        for btn in (self.Dashboard, self.Users, self.Departments, self.Roles):
+        for btn in (self.Dashboard, self.Users, self.Departments,
+                    self.Roles):
             self.sidebarLayout.addWidget(btn)
 
         # ── Industrial Attachment expandable group ────────────────────────────
-        self.IndustrialAttachment_Menu = QtWidgets.QFrame()
-        self.IndustrialAttachment_Menu.setObjectName("IndustrialAttachment_Menu")
-        self.IndustrialAttachment_Menu.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        self.IndustrialAttachment_Menu.setStyleSheet("background: transparent;")
-        iaVL = QtWidgets.QVBoxLayout(self.IndustrialAttachment_Menu)
-        iaVL.setContentsMargins(0, 0, 0, 0)
-        iaVL.setSpacing(0)
+        self.IndustialAttachment_Menu = QtWidgets.QFrame()
+        self.IndustialAttachment_Menu.setObjectName("IndustialAttachment_Menu")
+        self.IndustialAttachment_Menu.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self.IndustialAttachment_Menu.setStyleSheet("background: transparent;")
+        iaVL = QtWidgets.QVBoxLayout(self.IndustialAttachment_Menu)
+        iaVL.setContentsMargins(0, 0, 0, 0); iaVL.setSpacing(0)
 
-        self.Industrial_Attachment = self._make_nav_btn("  📎   Industrial Attachment", checkable=True)
+        self.Industrial_Attachment = self._make_nav_btn(
+            "  \U0001f4ce   Industrial Attachment", checkable=True)
         iaVL.addWidget(self.Industrial_Attachment)
 
-        # Submenu frame (hidden by default until Industrial Attachment is toggled)
         self.IndustrialAttachment_Submenu = QtWidgets.QFrame()
         self.IndustrialAttachment_Submenu.setObjectName("IndustrialAttachment_Submenu")
         self.IndustrialAttachment_Submenu.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.IndustrialAttachment_Submenu.setStyleSheet("background-color: #080f20;")
         subVL = QtWidgets.QVBoxLayout(self.IndustrialAttachment_Submenu)
-        subVL.setContentsMargins(0, 0, 0, 0)
-        subVL.setSpacing(0)
+        subVL.setContentsMargins(0, 0, 0, 0); subVL.setSpacing(0)
 
-        self.Applicants        = self._make_nav_btn("        Applicants",    checkable=True, sub=True)
-        self.Interviews        = self._make_nav_btn("        Interviews",    checkable=True, sub=True)
-        self.Attachees         = self._make_nav_btn("        Attachés",      checkable=True, sub=True)
-        self.Attendance        = self._make_nav_btn("        Attendance",    checkable=True, sub=True)
-        self.Evaluations       = self._make_nav_btn("        Evaluations",   checkable=True, sub=True)
-        self.Clearances        = self._make_nav_btn("        Clearances",    checkable=True, sub=True)
-        self.Reports_Attachment = self._make_nav_btn("        Reports",      checkable=True, sub=True)
+        self.Applicants         = self._make_nav_btn("        Applicants",  checkable=True, sub=True)
+        self.Interviews         = self._make_nav_btn("        Interviews",  checkable=True, sub=True)
+        self.Attachees          = self._make_nav_btn("        Attach\u00e9s",    checkable=True, sub=True)
+        self.Attendance         = self._make_nav_btn("        Attendance",  checkable=True, sub=True)
+        self.Evaluations        = self._make_nav_btn("        Evaluations", checkable=True, sub=True)
+        self.Clearances         = self._make_nav_btn("        Clearances",  checkable=True, sub=True)
+        self.Reports_Attachment = self._make_nav_btn("        Reports",     checkable=True, sub=True)
 
         for btn in (self.Applicants, self.Interviews, self.Attachees,
                     self.Attendance, self.Evaluations, self.Clearances,
@@ -214,18 +213,19 @@ class Ui_MainWindow(object):
 
         self.IndustrialAttachment_Submenu.setVisible(False)
         iaVL.addWidget(self.IndustrialAttachment_Submenu)
-        self.sidebarLayout.addWidget(self.IndustrialAttachment_Menu)
+        self.sidebarLayout.addWidget(self.IndustialAttachment_Menu)
 
-        # ── Remaining main nav buttons ────────────────────────────────────────
-        self.Tasks         = self._make_nav_btn("  ✅   Tasks",        checkable=True)
-        self.Meetings      = self._make_nav_btn("  📅   Meetings",     checkable=True)
-        self.Maintenance   = self._make_nav_btn("  🔧   Maintenance",  checkable=True)
-        self.Announcements = self._make_nav_btn("  📢   Announcements",checkable=True)
-        self.Reports       = self._make_nav_btn("  📊   Reports",      checkable=True)
-        self.Audit_Logs    = self._make_nav_btn("  🔍   Audit Logs",   checkable=True)
-        self.Settings      = self._make_nav_btn("  ⚙️   Settings",     checkable=True)
+        # ── Remaining nav buttons ─────────────────────────────────────────────
+        self.Tasks         = self._make_nav_btn("  \u2705   Tasks",         checkable=True)
+        self.Meetings      = self._make_nav_btn("  \U0001f4c5   Meetings",      checkable=True)
+        self.Visitors      = self._make_nav_btn("  \U0001f465   Visitors",      checkable=True)
+        self.Maintenance   = self._make_nav_btn("  \U0001f527   Maintenance",   checkable=True)
+        self.Announcements = self._make_nav_btn("  \U0001f4e2   Announcements", checkable=True)
+        self.Reports       = self._make_nav_btn("  \U0001f4ca   Reports",       checkable=True)
+        self.Audit_Logs    = self._make_nav_btn("  \U0001f50d   Audit Logs",    checkable=True)
+        self.Settings      = self._make_nav_btn("  \u2699\ufe0f   Settings",      checkable=True)
 
-        for btn in (self.Tasks, self.Meetings, self.Maintenance,
+        for btn in (self.Tasks, self.Meetings, self.Visitors, self.Maintenance,
                     self.Announcements, self.Reports, self.Audit_Logs, self.Settings):
             self.sidebarLayout.addWidget(btn)
 
@@ -431,35 +431,28 @@ class Ui_MainWindow(object):
         self.Dashboard_Page.setObjectName("Dashboard_Page")
         self._placeholder(self.Dashboard_Page, "DASHBOARD", "#5870ff")
         self.stackedWidget.addWidget(self.Dashboard_Page)
+        
+        """
+        from Dashboard_Page import DashboardPage
+        self.Dashboard_Page = DashboardPage()
+        self.stackedWidget.addWidget(self.Dashboard_Page)
+        """
 
         # ── Page 1: Users ────────────────────────────────────────────────────
         from Users_Page import UsersPage
         self.Users_Page = UsersPage()
         self.stackedWidget.addWidget(self.Users_Page)
 
-        # ── Page 2: Departments ────────────────────────────────────────────── LAWRENCE
-        self.Departments_Page = QtWidgets.QWidget()
-        self.Departments_Page.setObjectName("Departments_Page")
-        self._placeholder(self.Departments_Page, "DEPARTMENTS", "#5870ff")
-        self.stackedWidget.addWidget(self.Departments_Page)
-        
-        """
+        # ── Page 2: Departments ──────────────────────────────────────────────
         from Departments_Page import DepartmentsPage
         self.Departments_Page = DepartmentsPage()
         self.stackedWidget.addWidget(self.Departments_Page)
-        """
 
         # ── Page 3: Roles ──────────────────────────────────────────────────── LEWIS
-        self.Roles_Page = QtWidgets.QWidget()
-        self.Roles_Page.setObjectName("Roles_Page")
-        self._placeholder(self.Roles_Page, "ROLES", "#5870ff")
-        self.stackedWidget.addWidget(self.Roles_Page)
-        
-        """
         from Roles_Page import RolesPage
         self.Roles_Page = RolesPage()
         self.stackedWidget.addWidget(self.Roles_Page)
-        """
+        
 
         # ── Page 4: Industrial Attachment  (nested stacked widget) ───────────
         self.IndustrialAttachment_Page = QtWidgets.QWidget()
@@ -507,19 +500,23 @@ class Ui_MainWindow(object):
         self.Meetings_Page = MeetingsPage()
         self.stackedWidget.addWidget(self.Meetings_Page)
         """
+
+        # ── Page 7: Visitors ─────────────────────────────────────────────────
+        from Visitors_Page import VisitorsPage
+        self.Visitors_Page = VisitorsPage()
+        self.stackedWidget.addWidget(self.Visitors_Page)
         
-        # ── Page 7: Maintenance ──────────────────────────────────────────────
+        # ── Page 8: Maintenance ──────────────────────────────────────────────
         from Maintenance_Page import MaintenancePage
         self.Maintenance_Page = MaintenancePage()
         self.stackedWidget.addWidget(self.Maintenance_Page)
 
-        # ── Page 8: Announcements ────────────────────────────────────────────
+        # ── Page 9: Announcements ────────────────────────────────────────────
         from Announcements_Page import AnnouncementsPage
         self.Announcements_Page = AnnouncementsPage()
         self.stackedWidget.addWidget(self.Announcements_Page)
         
-
-        # ── Page 9: Reports ────────────────────────────────────────────────── SHIRLEY
+        # ── Page 10: Reports ────────────────────────────────────────────────── SHIRLEY
         self.Reports_Page = QtWidgets.QWidget()
         self.Reports_Page.setObjectName("Reports_Page")
         self._placeholder(self.Reports_Page, "REPORTS", "#5870ff")
@@ -531,12 +528,12 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.Reports_Page)
         """        
 
-        # ── Page 10: Audit Logs ──────────────────────────────────────────────
+        # ── Page 11: Audit Logs ──────────────────────────────────────────────
         from AuditLogs_Page import AuditLogsPage
         self.AuditLogs_Page = AuditLogsPage()
         self.stackedWidget.addWidget(self.AuditLogs_Page)
 
-        # ── Page 11: Settings ────────────────────────────────────────────────
+        # ── Page 12: Settings ────────────────────────────────────────────────
         from Settings_Page import SettingsPage
         self.Settings_Page = SettingsPage()
         self.stackedWidget.addWidget(self.Settings_Page)
@@ -552,10 +549,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-    # ──────────────────────────────────────────────────────────────────────────
-    # HELPERS
-    # ──────────────────────────────────────────────────────────────────────────
-
+    # ============================== HELPER FUNCTIONS ========================================================================================================================================================================================
     def _make_nav_btn(self, text: str, checkable: bool = True, sub: bool = False) -> QtWidgets.QPushButton:
         """Create a styled sidebar navigation button."""
         btn = QtWidgets.QPushButton(text)

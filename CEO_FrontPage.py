@@ -47,6 +47,7 @@ class CEOPage(QMainWindow, Ui_MainWindow):
         self.Industrial_Attachment.clicked.connect(self.toggle_ia_submenu)
         self.Tasks.clicked.connect(self.open_Tasks_Page)
         self.Meetings.clicked.connect(self.open_Meetings_Page)
+        self.Visitors.clicked.connect(self.open_Visitors_Page)
         self.Maintenance.clicked.connect(self.open_Maintenance_Page)
         self.Announcements.clicked.connect(self.open_Announcements_Page)
         self.Reports.clicked.connect(self.open_Reports_Page)
@@ -146,20 +147,23 @@ class CEOPage(QMainWindow, Ui_MainWindow):
     def open_Meetings_Page(self):
         self._navigate(6)
 
-    def open_Maintenance_Page(self):
+    def open_Visitors_Page(self):
         self._navigate(7)
 
-    def open_Announcements_Page(self):
+    def open_Maintenance_Page(self):
         self._navigate(8)
 
-    def open_Reports_Page(self):
+    def open_Announcements_Page(self):
         self._navigate(9)
 
-    def open_AuditLogs_Page(self):
+    def open_Reports_Page(self):
         self._navigate(10)
 
-    def open_Settings_Page(self):
+    def open_AuditLogs_Page(self):
         self._navigate(11)
+
+    def open_Settings_Page(self):
+        self._navigate(12)
 
     # ==========================================================================
     # INDUSTRIAL ATTACHMENT  — sub-page navigation
@@ -194,7 +198,6 @@ class CEOPage(QMainWindow, Ui_MainWindow):
     # ==========================================================================
     # CONTEXT MENUS  (skeleton — extend per page as needed)
     # ==========================================================================
-
     def show_context_menu(self, button: QtWidgets.QPushButton, menu_items: list):
         """
         Display a styled context menu anchored below *button*.

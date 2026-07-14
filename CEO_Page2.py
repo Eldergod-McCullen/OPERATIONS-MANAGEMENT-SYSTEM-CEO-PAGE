@@ -1,0 +1,460 @@
+# ==============================================================================
+# CEO_Page.py  —  Auto-generated UI definition for the OMS CEO Page
+# Project  : Operations Management System — Mfano Bora Africa Ltd.
+# Author   : Kelvin Shikali (refined)
+# Stack    : Python · PyQt6
+#
+# PAGE INDEX MAP
+# ──────────────
+#  0  Dashboard
+#  1  Users
+#  2  Departments
+#  3  Roles
+#  4  Visitors          ← NEW
+#  5  Industrial Attachment
+#  6  Tasks
+#  7  Meetings
+#  8  Maintenance
+#  9  Announcements
+# 10  Reports
+# 11  Audit Logs
+# 12  Settings
+# ==============================================================================
+
+from PyQt6 import QtCore, QtGui, QtWidgets
+
+SIDEBAR_EXPANDED  = 230
+SIDEBAR_COLLAPSED = 60
+
+
+class Ui_MainWindow(object):
+
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(1440, 900)
+        MainWindow.setMinimumSize(QtCore.QSize(1024, 700))
+        MainWindow.setWindowTitle("Operations Management System (OMS)")
+
+        self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.rootLayout = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.rootLayout.setContentsMargins(0, 0, 0, 0)
+        self.rootLayout.setSpacing(0)
+
+        # ══════════════════════════════════════════════════════════════════════
+        # SIDEBAR
+        # ══════════════════════════════════════════════════════════════════════
+        self.Menubar = QtWidgets.QWidget(parent=self.centralwidget)
+        self.Menubar.setObjectName("Menubar")
+        self.Menubar.setFixedWidth(SIDEBAR_EXPANDED)
+        self.Menubar.setStyleSheet("""
+            QWidget#Menubar { background-color: #0d1b3e; }
+            QPushButton {
+                background-color: transparent; color: #a8b8d8; border: none;
+                text-align: left; padding: 0px 0px 0px 20px;
+                font-size: 13px; font-family: 'Segoe UI', Arial, sans-serif;
+                height: 42px;
+            }
+            QPushButton:hover { background-color: #1a2d5a; color: #ffffff; }
+            QPushButton:checked {
+                background-color: #1e3a6e; color: #ffffff;
+                border-left: 3px solid #5870ff; padding-left: 17px;
+            }
+            QPushButton#subBtn {
+                padding-left: 48px; font-size: 12px; height: 36px; color: #8899bb;
+            }
+            QPushButton#subBtn:hover { background-color: #162447; color: #ffffff; }
+            QPushButton#subBtn:checked {
+                background-color: #1e3a6e; color: #ffffff;
+                border-left: 3px solid #5870ff; padding-left: 45px;
+            }
+            QPushButton#Log_out {
+                color: #ff6b6b; padding-left: 20px;
+                text-align: left; height: 42px; border-top: 1px solid #1a2d5a;
+            }
+            QPushButton#Log_out:hover { background-color: #3a0000; color: #ff9999; }
+        """)
+
+        self.sidebarLayout = QtWidgets.QVBoxLayout(self.Menubar)
+        self.sidebarLayout.setContentsMargins(0, 0, 0, 0)
+        self.sidebarLayout.setSpacing(0)
+
+        # Logo block
+        self.logoBlock = QtWidgets.QWidget()
+        self.logoBlock.setObjectName("logoBlock")
+        self.logoBlock.setFixedHeight(80)
+        self.logoBlock.setStyleSheet("""
+            QWidget#logoBlock { background-color: #0a1628; border-bottom: 1px solid #1a2d5a; }
+        """)
+        logoHL = QtWidgets.QHBoxLayout(self.logoBlock)
+        logoHL.setContentsMargins(14, 0, 10, 0); logoHL.setSpacing(10)
+
+        self.logoIconLabel = QtWidgets.QLabel("M")
+        self.logoIconLabel.setFixedSize(40, 40)
+        self.logoIconLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.logoIconLabel.setStyleSheet("""
+            QLabel { background-color: #d4a017; color: #0d1b3e; font-size: 22px;
+                     font-weight: 900; border-radius: 6px; font-family: 'Arial Black', sans-serif; }
+        """)
+        logoTextVL = QtWidgets.QVBoxLayout(); logoTextVL.setSpacing(1)
+        self.label_2 = QtWidgets.QLabel("MFANO BORA")
+        self.label_2.setObjectName("label_2")
+        self.label_2.setStyleSheet("""
+            color: #ffffff; font-size: 13px; font-weight: bold;
+            font-family: 'Arial Black', sans-serif; letter-spacing: 1px;
+        """)
+        self.logoSubLabel = QtWidgets.QLabel("AFRICA LTD.")
+        self.logoSubLabel.setStyleSheet("""
+            color: #d4a017; font-size: 10px; font-weight: bold; letter-spacing: 2px;
+        """)
+        logoTextVL.addWidget(self.label_2); logoTextVL.addWidget(self.logoSubLabel)
+        logoHL.addWidget(self.logoIconLabel); logoHL.addLayout(logoTextVL); logoHL.addStretch()
+        self.sidebarLayout.addWidget(self.logoBlock)
+
+        # MAIN MENU label
+        self.menuSectionLabel = QtWidgets.QLabel("MAIN MENU")
+        self.menuSectionLabel.setObjectName("menuSectionLabel")
+        self.menuSectionLabel.setFixedHeight(36)
+        self.menuSectionLabel.setStyleSheet("""
+            color: #4a5a7a; font-size: 10px; font-weight: bold;
+            letter-spacing: 1.5px; padding-left: 20px; font-family: 'Segoe UI', Arial, sans-serif;
+        """)
+        self.sidebarLayout.addWidget(self.menuSectionLabel)
+
+        # ── Nav buttons (top group) ───────────────────────────────────────────
+        self.Dashboard   = self._make_nav_btn("  \U0001f3e0   Dashboard",   checkable=True)
+        self.Users       = self._make_nav_btn("  \U0001f465   Users",        checkable=True)
+        self.Departments = self._make_nav_btn("  \U0001f3e2   Departments",  checkable=True)
+        self.Roles       = self._make_nav_btn("  \U0001f511   Roles",        checkable=True)
+        
+        for btn in (self.Dashboard, self.Users, self.Departments,
+                    self.Roles):
+            self.sidebarLayout.addWidget(btn)
+
+        # ── Industrial Attachment expandable group ────────────────────────────
+        self.IndustialAttachment_Menu = QtWidgets.QFrame()
+        self.IndustialAttachment_Menu.setObjectName("IndustialAttachment_Menu")
+        self.IndustialAttachment_Menu.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self.IndustialAttachment_Menu.setStyleSheet("background: transparent;")
+        iaVL = QtWidgets.QVBoxLayout(self.IndustialAttachment_Menu)
+        iaVL.setContentsMargins(0, 0, 0, 0); iaVL.setSpacing(0)
+
+        self.Industrial_Attachment = self._make_nav_btn(
+            "  \U0001f4ce   Industrial Attachment", checkable=True)
+        iaVL.addWidget(self.Industrial_Attachment)
+
+        self.IndustrialAttachment_Submenu = QtWidgets.QFrame()
+        self.IndustrialAttachment_Submenu.setObjectName("IndustrialAttachment_Submenu")
+        self.IndustrialAttachment_Submenu.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self.IndustrialAttachment_Submenu.setStyleSheet("background-color: #080f20;")
+        subVL = QtWidgets.QVBoxLayout(self.IndustrialAttachment_Submenu)
+        subVL.setContentsMargins(0, 0, 0, 0); subVL.setSpacing(0)
+
+        self.Applicants         = self._make_nav_btn("        Applicants",  checkable=True, sub=True)
+        self.Interviews         = self._make_nav_btn("        Interviews",  checkable=True, sub=True)
+        self.Attachees          = self._make_nav_btn("        Attach\u00e9s",    checkable=True, sub=True)
+        self.Attendance         = self._make_nav_btn("        Attendance",  checkable=True, sub=True)
+        self.Evaluations        = self._make_nav_btn("        Evaluations", checkable=True, sub=True)
+        self.Clearances         = self._make_nav_btn("        Clearances",  checkable=True, sub=True)
+        self.Reports_Attachment = self._make_nav_btn("        Reports",     checkable=True, sub=True)
+
+        for btn in (self.Applicants, self.Interviews, self.Attachees,
+                    self.Attendance, self.Evaluations, self.Clearances,
+                    self.Reports_Attachment):
+            subVL.addWidget(btn)
+
+        self.IndustrialAttachment_Submenu.setVisible(False)
+        iaVL.addWidget(self.IndustrialAttachment_Submenu)
+        self.sidebarLayout.addWidget(self.IndustialAttachment_Menu)
+
+        # ── Remaining nav buttons ─────────────────────────────────────────────
+        self.Tasks         = self._make_nav_btn("  \u2705   Tasks",         checkable=True)
+        self.Meetings      = self._make_nav_btn("  \U0001f4c5   Meetings",      checkable=True)
+        self.Visitors    = self._make_nav_btn("  \U0001f440   Visitors",     checkable=True)
+        self.Maintenance   = self._make_nav_btn("  \U0001f527   Maintenance",   checkable=True)
+        self.Announcements = self._make_nav_btn("  \U0001f4e2   Announcements", checkable=True)
+        self.Reports       = self._make_nav_btn("  \U0001f4ca   Reports",       checkable=True)
+        self.Audit_Logs    = self._make_nav_btn("  \U0001f50d   Audit Logs",    checkable=True)
+        self.Settings      = self._make_nav_btn("  \u2699\ufe0f   Settings",      checkable=True)
+
+        for btn in (self.Tasks, self.Visitors, self.Meetings, self.Maintenance,
+                    self.Announcements, self.Reports, self.Audit_Logs, self.Settings):
+            self.sidebarLayout.addWidget(btn)
+
+        self.sidebarLayout.addStretch()
+
+        # Session info block
+        self.sessionBlock = QtWidgets.QWidget()
+        self.sessionBlock.setObjectName("sessionBlock")
+        self.sessionBlock.setStyleSheet("""
+            QWidget#sessionBlock { border-top: 1px solid #1a2d5a; background-color: #0a1628; }
+            QLabel { color: #6b7a9a; font-size: 10px; padding-left: 20px; }
+            QLabel#sessionActive { color: #2ecc71; font-size: 11px; }
+        """)
+        sessionVL = QtWidgets.QVBoxLayout(self.sessionBlock)
+        sessionVL.setContentsMargins(0, 8, 0, 10); sessionVL.setSpacing(2)
+        self.sessionActiveLabel  = QtWidgets.QLabel("\u25cf Active Session")
+        self.sessionActiveLabel.setObjectName("sessionActive")
+        self.sessionLoginLabel   = QtWidgets.QLabel("Last Login: \u2014")
+        self.sessionVersionLabel = QtWidgets.QLabel("Version 1.0.0")
+        sessionVL.addWidget(self.sessionActiveLabel)
+        sessionVL.addWidget(self.sessionLoginLabel)
+        sessionVL.addWidget(self.sessionVersionLabel)
+
+        self.Log_out = QtWidgets.QPushButton("  \U0001f6aa   Log out")
+        self.Log_out.setObjectName("Log_out")
+        self.Log_out.setCheckable(False)
+        self.Log_out.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+
+        self.sidebarLayout.addWidget(self.sessionBlock)
+        self.sidebarLayout.addWidget(self.Log_out)
+        self.rootLayout.addWidget(self.Menubar)
+
+        # ══════════════════════════════════════════════════════════════════════
+        # RIGHT SIDE
+        # ══════════════════════════════════════════════════════════════════════
+        self.rightPane = QtWidgets.QWidget()
+        self.rightPane.setObjectName("rightPane")
+        self.rightPane.setStyleSheet("background-color: #f0f2f5;")
+        rightVL = QtWidgets.QVBoxLayout(self.rightPane)
+        rightVL.setContentsMargins(0, 0, 0, 0); rightVL.setSpacing(0)
+
+        # Header
+        self.Header = QtWidgets.QWidget()
+        self.Header.setObjectName("Header")
+        self.Header.setFixedHeight(64)
+        self.Header.setStyleSheet("""
+            QWidget#Header { background-color: #ffffff; border-bottom: 1px solid #e0e4ec; }
+            QLabel#greetLabel { font-size: 13px; font-weight: bold; color: #1a1a2e;
+                                font-family: 'Segoe UI', Arial, sans-serif; }
+            QLabel#subLabel   { font-size: 11px; color: #6b7280;
+                                font-family: 'Segoe UI', Arial, sans-serif; }
+            QLineEdit#searchBox {
+                border: 1px solid #d1d5db; border-radius: 18px; padding: 6px 16px;
+                font-size: 12px; color: #374151; background-color: #f9fafb; min-width: 220px;
+            }
+            QLineEdit#searchBox:focus { border: 1px solid #5870ff; background-color: #ffffff; }
+            QPushButton#Menu_Button {
+                background: transparent; border: none; font-size: 20px;
+                color: #6b7280; padding: 4px 8px;
+            }
+            QPushButton#Menu_Button:hover { color: #1a1a2e; }
+            QLabel#avatarLabel {
+                background-color: #c8a96e; border-radius: 18px;
+                color: white; font-weight: bold; font-size: 12px;
+            }
+            QLabel#userNameLabel { font-size: 12px; font-weight: bold; color: #1a1a2e; }
+            QLabel#userRoleLabel { font-size: 10px; color: #6b7280; }
+        """)
+        headerHL = QtWidgets.QHBoxLayout(self.Header)
+        headerHL.setContentsMargins(16, 0, 20, 0); headerHL.setSpacing(14)
+
+        self.Menu_Button = QtWidgets.QPushButton("\u2630")
+        self.Menu_Button.setObjectName("Menu_Button")
+        self.Menu_Button.setFixedSize(36, 36)
+        self.Menu_Button.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.Menu_Button.setCheckable(False)
+
+        titleVL = QtWidgets.QVBoxLayout(); titleVL.setSpacing(1)
+        self.label = QtWidgets.QLabel("Good morning, McCULLEN")
+        self.label.setObjectName("greetLabel")
+        self.label_3 = QtWidgets.QLabel("WELCOME TO YOUR PAGE")
+        self.label_3.setObjectName("subLabel")
+        titleVL.addWidget(self.label); titleVL.addWidget(self.label_3)
+
+        self.lineEdit = QtWidgets.QLineEdit()
+        self.lineEdit.setObjectName("searchBox")
+        self.lineEdit.setPlaceholderText("\U0001f50d  Search here...")
+        self.lineEdit.setFixedHeight(36)
+
+        headerHL.addWidget(self.Menu_Button); headerHL.addLayout(titleVL)
+        headerHL.addStretch(); headerHL.addWidget(self.lineEdit)
+
+        self.notifLabel = QtWidgets.QLabel("\U0001f514")
+        self.notifLabel.setObjectName("notifLabel")
+        self.notifLabel.setFixedSize(36, 36)
+        self.notifLabel.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.notifLabel.setStyleSheet(
+            "QLabel { background-color: #f3f4f6; border-radius: 18px; font-size: 16px; }")
+
+        divider = QtWidgets.QFrame()
+        divider.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        divider.setStyleSheet("color: #e0e4ec;")
+
+        self.label_4 = QtWidgets.QLabel("JM")
+        self.label_4.setObjectName("avatarLabel")
+        self.label_4.setFixedSize(36, 36)
+        self.label_4.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+
+        userInfoVL = QtWidgets.QVBoxLayout(); userInfoVL.setSpacing(1)
+        self.label_5 = QtWidgets.QLabel("McCULLEN"); self.label_5.setObjectName("userNameLabel")
+        self.label_6 = QtWidgets.QLabel("CEO");      self.label_6.setObjectName("userRoleLabel")
+        userInfoVL.addWidget(self.label_5); userInfoVL.addWidget(self.label_6)
+
+        headerHL.addWidget(self.notifLabel); headerHL.addWidget(divider)
+        headerHL.addWidget(self.label_4);    headerHL.addLayout(userInfoVL)
+        rightVL.addWidget(self.Header)
+
+        # Main page / stacked widget
+        self.MainPage = QtWidgets.QWidget()
+        self.MainPage.setObjectName("MainPage")
+        self.MainPage.setStyleSheet("background-color: #f0f2f5;")
+        mainPageLayout = QtWidgets.QVBoxLayout(self.MainPage)
+        mainPageLayout.setContentsMargins(0, 0, 0, 0); mainPageLayout.setSpacing(0)
+
+        self.stackedWidget = QtWidgets.QStackedWidget()
+        self.stackedWidget.setObjectName("stackedWidget")
+        self.stackedWidget.setStyleSheet("background-color: #f0f2f5;")
+
+        # Page 0 — Dashboard
+        self.Dashboard_Page = QtWidgets.QWidget()
+        self.Dashboard_Page.setObjectName("Dashboard_Page")
+        self._placeholder(self.Dashboard_Page, "DASHBOARD", "#5870ff")
+        self.stackedWidget.addWidget(self.Dashboard_Page)
+
+        # Page 1 — Users
+        from Users_Page import UsersPage
+        self.Users_Page = UsersPage()
+        self.stackedWidget.addWidget(self.Users_Page)
+
+        # Page 2 — Departments
+        from Departments_Page import DepartmentsPage
+        self.Departments_Page = DepartmentsPage()
+        self.stackedWidget.addWidget(self.Departments_Page)
+
+        # Page 3 — Roles
+        self.Roles_Page = QtWidgets.QWidget()
+        self.Roles_Page.setObjectName("Roles_Page")
+        self._placeholder(self.Roles_Page, "ROLES", "#5870ff")
+        self.stackedWidget.addWidget(self.Roles_Page)
+        
+        """
+        from Roles_Page import RolesPage
+        self.Roles_Page = RolesPage()
+        self.stackedWidget.addWidget(self.Roles_Page)
+        """
+
+        # ─────────────────────────────────────────────────────────────────────
+        # Page 4 — Visitors  (NEW — inserted here)
+        # ─────────────────────────────────────────────────────────────────────
+        self.Visitors_Page = QtWidgets.QWidget()
+        self.Visitors_Page.setObjectName("Visitors_Page")
+        self._placeholder(self.Visitors_Page, "VISITORS", "#5870ff")
+        self.stackedWidget.addWidget(self.Visitors_Page)
+        
+        """
+        from Visitors_Page import VisitorsPage
+        self.Visitors_Page = VisitorsPage()
+        self.stackedWidget.addWidget(self.Visitors_Page)
+        """
+        # Page 5 — Industrial Attachment
+        self.IndustrialAttachment_Page = QtWidgets.QWidget()
+        self.IndustrialAttachment_Page.setObjectName("IndustrialAttachment_Page")
+        iaPageLayout = QtWidgets.QVBoxLayout(self.IndustrialAttachment_Page)
+        iaPageLayout.setContentsMargins(0, 0, 0, 0); iaPageLayout.setSpacing(0)
+
+        self.stackedWidget_2 = QtWidgets.QStackedWidget()
+        self.stackedWidget_2.setObjectName("stackedWidget_2")
+        self.stackedWidget_2.setStyleSheet("background-color: #f0f2f5;")
+
+        self.Applicants_Page        = self._ia_page("APPLICANTS")
+        self.Attachees_Page         = self._ia_page("ATTACH\u00c9S")
+        self.Attendance_Page        = self._ia_page("ATTENDANCE")
+        self.Evaluations_Page       = self._ia_page("EVALUATIONS")
+        self.AttachmentReports_Page = self._ia_page("ATTACHMENT REPORTS")
+        self.Interviews_Page        = self._ia_page("INTERVIEWS")
+        self.Clearances_Page        = self._ia_page("CLEARANCES")
+
+        for page in (self.Applicants_Page, self.Attachees_Page,
+                     self.Attendance_Page, self.Evaluations_Page,
+                     self.AttachmentReports_Page, self.Interviews_Page,
+                     self.Clearances_Page):
+            self.stackedWidget_2.addWidget(page)
+
+        iaPageLayout.addWidget(self.stackedWidget_2)
+        self.stackedWidget.addWidget(self.IndustrialAttachment_Page)
+
+        # Page 6 — Tasks
+        from Tasks_Page import TasksPage
+        self.Tasks_Page = TasksPage()
+        self.stackedWidget.addWidget(self.Tasks_Page)
+
+        # Page 7 — Meetings
+        self.Meetings_Page = QtWidgets.QWidget()
+        self.Meetings_Page.setObjectName("Meetings_Page")
+        self._placeholder(self.Meetings_Page, "MEETINGS", "#5870ff")
+        self.stackedWidget.addWidget(self.Meetings_Page)
+         
+        """
+        from Meetings_Page import MeetingsPage
+        self.Meetings_Page = MeetingsPage()
+        self.stackedWidget.addWidget(self.Meetings_Page)
+        """
+
+        # Page 8 — Maintenance
+        from Maintenance_Page import MaintenancePage
+        self.Maintenance_Page = MaintenancePage()
+        self.stackedWidget.addWidget(self.Maintenance_Page)
+
+        # Page 9 — Announcements
+        from Announcements_Page import AnnouncementsPage
+        self.Announcements_Page = AnnouncementsPage()
+        self.stackedWidget.addWidget(self.Announcements_Page)
+
+        # Page 10 — Reports
+        self.Reports_Page = QtWidgets.QWidget()
+        self.Reports_Page.setObjectName("Reports_Page")
+        self._placeholder(self.Reports_Page, "REPORTS", "#5870ff")
+        self.stackedWidget.addWidget(self.Reports_Page)
+        
+        """
+        from Reports_Page import ReportsPage
+        self.Reports_Page = ReportsPage()
+        self.stackedWidget.addWidget(self.Reports_Page)
+        """  
+
+        # Page 11 — Audit Logs
+        from AuditLogs_Page import AuditLogsPage
+        self.AuditLogs_Page = AuditLogsPage()
+        self.stackedWidget.addWidget(self.AuditLogs_Page)
+
+        # Page 12 — Settings
+        from Settings_Page import SettingsPage
+        self.Settings_Page = SettingsPage()
+        self.stackedWidget.addWidget(self.Settings_Page)
+
+        self.stackedWidget.setCurrentIndex(0)
+        mainPageLayout.addWidget(self.stackedWidget)
+        rightVL.addWidget(self.MainPage)
+        self.rootLayout.addWidget(self.rightPane)
+        MainWindow.setCentralWidget(self.centralwidget)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    # ── Helpers ───────────────────────────────────────────────────────────────
+    def _make_nav_btn(self, text: str, checkable: bool = True,
+                      sub: bool = False) -> QtWidgets.QPushButton:
+        btn = QtWidgets.QPushButton(text)
+        if sub:
+            btn.setObjectName("subBtn")
+        btn.setCheckable(checkable)
+        if checkable:
+            btn.setAutoExclusive(True)
+        btn.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        return btn
+
+    def _placeholder(self, page: QtWidgets.QWidget, title: str,
+                     color: str = "#5870ff"):
+        layout = QtWidgets.QVBoxLayout(page)
+        layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        lbl = QtWidgets.QLabel(title)
+        lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        lbl.setStyleSheet(f"""
+            color: {color}; font-size: 28px; font-weight: bold;
+            font-family: 'Arial Black', sans-serif; letter-spacing: 2px;
+        """)
+        layout.addWidget(lbl)
+
+    def _ia_page(self, title: str) -> QtWidgets.QWidget:
+        page = QtWidgets.QWidget()
+        self._placeholder(page, title, "#1e3a6e")
+        return page
