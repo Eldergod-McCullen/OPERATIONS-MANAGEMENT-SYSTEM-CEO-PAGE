@@ -200,7 +200,7 @@ class Ui_MainWindow(object):
 
         self.Applicants         = self._make_nav_btn("        Applicants",  checkable=True, sub=True)
         self.Interviews         = self._make_nav_btn("        Interviews",  checkable=True, sub=True)
-        self.Attachees          = self._make_nav_btn("        Attach\u00e9s",    checkable=True, sub=True)
+        self.Attachees          = self._make_nav_btn("        Attache\u00e9s",    checkable=True, sub=True)
         self.Attendance         = self._make_nav_btn("        Attendance",  checkable=True, sub=True)
         self.Evaluations        = self._make_nav_btn("        Evaluations", checkable=True, sub=True)
         self.Clearances         = self._make_nav_btn("        Clearances",  checkable=True, sub=True)
@@ -448,41 +448,59 @@ class Ui_MainWindow(object):
         self.Departments_Page = DepartmentsPage()
         self.stackedWidget.addWidget(self.Departments_Page)
 
-        # ── Page 3: Roles ──────────────────────────────────────────────────── LEWIS
+        # ── Page 3: Roles ───────────────────────────────────────────────────
         from Roles_Page import RolesPage
         self.Roles_Page = RolesPage()
         self.stackedWidget.addWidget(self.Roles_Page)
         
-
         # ── Page 4: Industrial Attachment  (nested stacked widget) ───────────
         self.IndustrialAttachment_Page = QtWidgets.QWidget()
         self.IndustrialAttachment_Page.setObjectName("IndustrialAttachment_Page")
+        self.IndustrialAttachment_Page.setStyleSheet("background-color: #f0f2f5;")
         iaPageLayout = QtWidgets.QVBoxLayout(self.IndustrialAttachment_Page)
         iaPageLayout.setContentsMargins(0, 0, 0, 0)
         iaPageLayout.setSpacing(0)
-        
-        from IndustrialAttachment_Page import IndustrialAttachmentPage
-        self.IndustrialAttachment_Page = IndustrialAttachmentPage()
-        self.stackedWidget.addWidget(self.IndustrialAttachment_Page)  
         
         self.stackedWidget_2 = QtWidgets.QStackedWidget()
         self.stackedWidget_2.setObjectName("stackedWidget_2")
         self.stackedWidget_2.setStyleSheet("background-color: #f0f2f5;")
 
-        self.Applicants_Page        = self._ia_page("APPLICANTS")
-        self.Attachees_Page         = self._ia_page("ATTACHÉS")
-        self.Attendance_Page        = self._ia_page("ATTENDANCE")
-        self.Evaluations_Page       = self._ia_page("EVALUATIONS")
+        # ── IA Sub-pages (add in correct order to stackedWidget_2) ───────────
+        # Index 0: Applicants
+        self.Applicants_Page = self._ia_page("APPLICANTS")
+        self.stackedWidget_2.addWidget(self.Applicants_Page)
+        
+        # Index 1: Attachees
+        from Attachees_Page import AttacheesPage
+        self.Attachees_Page = AttacheesPage()
+        self.stackedWidget_2.addWidget(self.Attachees_Page)
+        
+        # Index 2: Attendance
+        self.Attendance_Page = self._ia_page("ATTENDANCE")
+        self.stackedWidget_2.addWidget(self.Attendance_Page)
+        
+        # Index 3: Evaluations
+        self.Evaluations_Page = self._ia_page("EVALUATIONS")
+        self.stackedWidget_2.addWidget(self.Evaluations_Page)
+        
+        # Index 4: Attachment Reports
         self.AttachmentReports_Page = self._ia_page("ATTACHMENT REPORTS")
-        self.Interviews_Page        = self._ia_page("INTERVIEWS")
-        self.Clearances_Page        = self._ia_page("CLEARANCES")
-
-        for page in (self.Applicants_Page,self.Attachees_Page,self.Attendance_Page, self.Evaluations_Page,self.AttachmentReports_Page,
-                    self.Interviews_Page,self.Clearances_Page):
-            self.stackedWidget_2.addWidget(page)
-
-        #iaPageLayout.addWidget(self.stackedWidget_2)                  LEAVE THESE TWO LINES COMMENTED OUT,THEY ARE NOT NEEDED. THEY WERE CAUSING THE IA PAGE TO BE EMPTY WHEN CLICKED ON.
-        #self.stackedWidget.addWidget(self.IndustrialAttachment_Page)  ADD THE INDUSTRIAL ATTACHMENT PAGES FIRST
+        self.stackedWidget_2.addWidget(self.AttachmentReports_Page)
+        
+        # Index 5: Interviews
+        from Interviews_Page import InterviewsPage
+        self.Interviews_Page = InterviewsPage()
+        self.stackedWidget_2.addWidget(self.Interviews_Page)
+        
+        # Index 6: Clearances
+        self.Clearances_Page = self._ia_page("CLEARANCES")
+        self.stackedWidget_2.addWidget(self.Clearances_Page)
+        
+        # Add stackedWidget_2 to the IndustrialAttachment container
+        iaPageLayout.addWidget(self.stackedWidget_2)
+        
+        # Add the IndustrialAttachment container to the main stacked widget
+        self.stackedWidget.addWidget(self.IndustrialAttachment_Page)
 
         # ── Page 5: Tasks ────────────────────────────────────────────────────
         from Tasks_Page import TasksPage

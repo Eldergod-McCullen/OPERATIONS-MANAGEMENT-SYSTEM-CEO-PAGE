@@ -1,5 +1,5 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtWidgets import QMainWindow, QMenu
+from PyQt6.QtWidgets import QMainWindow, QMenu, QButtonGroup
 from PyQt6.QtGui import QAction
 from PyQt6.QtCore import QPropertyAnimation, QEasingCurve
 
@@ -26,6 +26,10 @@ class CEOPage(QMainWindow, Ui_MainWindow):
         # Track sidebar state
         self._sidebar_expanded = True
 
+        # ── Create button groups for exclusive selection ─────────────────────
+        self.main_button_group = QButtonGroup()
+        self.ia_button_group = QButtonGroup()
+
         # ── Sidebar animation ──────────────────────────────────────────────────
         self._sidebar_anim = QPropertyAnimation(self.Menubar, b"maximumWidth")
         self._sidebar_anim.setDuration(250)
@@ -38,6 +42,36 @@ class CEOPage(QMainWindow, Ui_MainWindow):
 
         # ── Connect hamburger button ───────────────────────────────────────────
         self.Menu_Button.clicked.connect(self.toggle_sidebar)
+
+        # ── Add main nav buttons to button group ────────────────────────────
+        self.main_button_group.addButton(self.Dashboard, 0)
+        self.main_button_group.addButton(self.Users, 1)
+        self.main_button_group.addButton(self.Departments, 2)
+        self.main_button_group.addButton(self.Roles, 3)
+        self.main_button_group.addButton(self.Industrial_Attachment, 4)
+        self.main_button_group.addButton(self.Tasks, 5)
+        self.main_button_group.addButton(self.Meetings, 6)
+        self.main_button_group.addButton(self.Visitors, 7)
+        self.main_button_group.addButton(self.Maintenance, 8)
+        self.main_button_group.addButton(self.Announcements, 9)
+        self.main_button_group.addButton(self.Reports, 10)
+        self.main_button_group.addButton(self.Audit_Logs, 11)
+        self.main_button_group.addButton(self.Settings, 12)
+
+        # ── Set button group to exclusive mode ──────────────────────────────
+        self.main_button_group.setExclusive(True)
+
+        # ── Add Industrial Attachment sub-buttons to their own group ────────
+        self.ia_button_group.addButton(self.Applicants, 0)
+        self.ia_button_group.addButton(self.Attachees, 1)
+        self.ia_button_group.addButton(self.Attendance, 2)
+        self.ia_button_group.addButton(self.Evaluations, 3)
+        self.ia_button_group.addButton(self.Reports_Attachment, 4)
+        self.ia_button_group.addButton(self.Interviews, 5)
+        self.ia_button_group.addButton(self.Clearances, 6)
+
+        # ── Set IA button group to exclusive mode ──────────────────────────
+        self.ia_button_group.setExclusive(True)
 
         # ── Connect main nav buttons ──────────────────────────────────────────
         self.Dashboard.clicked.connect(self.open_Dashboard_Page)
@@ -113,6 +147,9 @@ class CEOPage(QMainWindow, Ui_MainWindow):
         # Navigate to the IA container page whenever the menu is opened
         if not visible:
             self.stackedWidget.setCurrentIndex(4)
+            # Ensure the first IA submenu item is checked
+            if self.ia_button_group.checkedButton() is None:
+                self.Applicants.setChecked(True)
 
     # ==========================================================================
     # MAIN PAGE NAVIGATION
@@ -125,6 +162,9 @@ class CEOPage(QMainWindow, Ui_MainWindow):
         if index != 4:
             self.IndustrialAttachment_Submenu.setVisible(False)
             self.Industrial_Attachment.setChecked(False)
+            # Uncheck all IA submenu buttons when leaving the IA section
+            for btn in self.ia_button_group.buttons():
+                btn.setChecked(False)
 
     def open_Dashboard_Page(self):
         self._navigate(0)
