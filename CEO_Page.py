@@ -426,18 +426,11 @@ class Ui_MainWindow(object):
         self.stackedWidget.setObjectName("stackedWidget")
         self.stackedWidget.setStyleSheet("background-color: #f0f2f5;")
 
-        # ── Page 0: Dashboard ───────────────────────────────────────────────── DAVID
-        self.Dashboard_Page = QtWidgets.QWidget()
-        self.Dashboard_Page.setObjectName("Dashboard_Page")
-        self._placeholder(self.Dashboard_Page, "DASHBOARD", "#5870ff")
-        self.stackedWidget.addWidget(self.Dashboard_Page)
-        
-        """
+        # ── Page 0: Dashboard ─────────────────────────────────────────────────
         from Dashboard_Page import DashboardPage
         self.Dashboard_Page = DashboardPage()
         self.stackedWidget.addWidget(self.Dashboard_Page)
-        """
-
+        
         # ── Page 1: Users ────────────────────────────────────────────────────
         from Users_Page import UsersPage
         self.Users_Page = UsersPage()
@@ -467,7 +460,8 @@ class Ui_MainWindow(object):
 
         # ── IA Sub-pages (add in correct order to stackedWidget_2) ───────────
         # Index 0: Applicants
-        self.Applicants_Page = self._ia_page("APPLICANTS")
+        from Applicants_Page import ApplicantsPage
+        self.Applicants_Page = ApplicantsPage()
         self.stackedWidget_2.addWidget(self.Applicants_Page)
         
         # Index 1: Attachees
@@ -476,7 +470,8 @@ class Ui_MainWindow(object):
         self.stackedWidget_2.addWidget(self.Attachees_Page)
         
         # Index 2: Attendance
-        self.Attendance_Page = self._ia_page("ATTENDANCE")
+        from Attendance_Page import AttendancePage
+        self.Attendance_Page = AttendancePage()
         self.stackedWidget_2.addWidget(self.Attendance_Page)
         
         # Index 3: Evaluations
@@ -493,7 +488,8 @@ class Ui_MainWindow(object):
         self.stackedWidget_2.addWidget(self.Interviews_Page)
         
         # Index 6: Clearances
-        self.Clearances_Page = self._ia_page("CLEARANCES")
+        from Clearances_Page import ClearancesPage
+        self.Clearances_Page = ClearancesPage()
         self.stackedWidget_2.addWidget(self.Clearances_Page)
         
         # Add stackedWidget_2 to the IndustrialAttachment container
