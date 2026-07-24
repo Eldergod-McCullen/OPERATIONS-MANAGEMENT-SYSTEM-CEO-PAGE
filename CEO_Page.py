@@ -475,11 +475,13 @@ class Ui_MainWindow(object):
         self.stackedWidget_2.addWidget(self.Attendance_Page)
         
         # Index 3: Evaluations
-        self.Evaluations_Page = self._ia_page("EVALUATIONS")
+        from Evaluations_Page import EvaluationsPage
+        self.Evaluations_Page = EvaluationsPage()
         self.stackedWidget_2.addWidget(self.Evaluations_Page)
         
         # Index 4: Attachment Reports
-        self.AttachmentReports_Page = self._ia_page("ATTACHMENT REPORTS")
+        from AttachmentReports_Page import AttachmentReportsPage
+        self.AttachmentReports_Page = AttachmentReportsPage()
         self.stackedWidget_2.addWidget(self.AttachmentReports_Page)
         
         # Index 5: Interviews
